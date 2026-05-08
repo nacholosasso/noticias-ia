@@ -1,0 +1,8 @@
+feedparser
+google-genai
+pandas
+requests
+beautifulsoup4
+firebase-admin
+python-dotenv
+google-cloud-firestore

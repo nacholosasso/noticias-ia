@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "gen-lang-client-0099709380"
+  },
+  "targets": {
+    "gen-lang-client-0099709380": {
+      "hosting": {
+        "noticias-target": [
+          "info-noticias-ia"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}
