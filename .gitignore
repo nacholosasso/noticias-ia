@@ -1,6 +1,8 @@
 # Variables de entorno y credenciales (¡NO SUBIR A GITHUB!)
 .env
 firebase-creds.json
+cuentas-servicios-noticias-ia-creds.json
+*-creds.json
 
 # Entornos virtuales
 venv/
@@ -11,3 +13,6 @@ env/
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Firebase cache
+.firebase/
