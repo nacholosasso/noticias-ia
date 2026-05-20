@@ -137,6 +137,7 @@ def ejecutar_recoleccion(request=None):
                 # GEMINI (Modelos TAL CUAL pediste)
                 resumen_ia = "Error en IA"
                 modelos_a_probar = [
+                    'gemini-3.5-flash',
                     'gemini-3.1-flash-lite-preview', 
                     'gemini-3-flash-preview', 
                     'gemini-2.5-flash-lite', 
