@@ -190,7 +190,7 @@
 
         .card-footer {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end;
             align-items: center;
             padding-top: 1.2rem;
             border-top: 1px solid var(--border-color);
@@ -214,6 +214,13 @@
         .cat-salud { background-color: rgba(6, 182, 212, 0.15); color: var(--cat-salud); }
         .cat-sociedad { background-color: rgba(139, 92, 246, 0.15); color: var(--cat-sociedad); }
         .cat-general { background-color: rgba(100, 116, 139, 0.15); color: var(--cat-general); }
+
+        .badges-wrapper {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
 
         .read-more {
             color: var(--accent-color);
@@ -473,7 +480,10 @@
             <!-- Skeleton Loaders (Se muestran mientras cargan los datos) -->
             <div class="news-card">
                 <div class="card-header">
-                    <div class="skeleton" style="width: 70px; height: 26px; border-radius: 20px;"></div>
+                    <div class="badges-wrapper">
+                        <div class="skeleton" style="width: 70px; height: 26px; border-radius: 20px;"></div>
+                        <div class="skeleton" style="width: 80px; height: 26px; border-radius: 6px;"></div>
+                    </div>
                     <div class="skeleton" style="width: 80px; height: 16px;"></div>
                 </div>
                 <div class="skeleton" style="width: 100%; height: 26px; margin-bottom: 0.8rem;"></div>
@@ -485,7 +495,10 @@
             <!-- Repetimos dos skeletons más para simular la grilla cargando -->
             <div class="news-card">
                 <div class="card-header">
-                    <div class="skeleton" style="width: 70px; height: 26px; border-radius: 20px;"></div>
+                    <div class="badges-wrapper">
+                        <div class="skeleton" style="width: 70px; height: 26px; border-radius: 20px;"></div>
+                        <div class="skeleton" style="width: 80px; height: 26px; border-radius: 6px;"></div>
+                    </div>
                     <div class="skeleton" style="width: 80px; height: 16px;"></div>
                 </div>
                 <div class="skeleton" style="width: 100%; height: 26px; margin-bottom: 0.8rem;"></div>
@@ -496,7 +509,10 @@
             </div>
             <div class="news-card">
                 <div class="card-header">
-                    <div class="skeleton" style="width: 70px; height: 26px; border-radius: 20px;"></div>
+                    <div class="badges-wrapper">
+                        <div class="skeleton" style="width: 70px; height: 26px; border-radius: 20px;"></div>
+                        <div class="skeleton" style="width: 80px; height: 26px; border-radius: 6px;"></div>
+                    </div>
                     <div class="skeleton" style="width: 80px; height: 16px;"></div>
                 </div>
                 <div class="skeleton" style="width: 100%; height: 26px; margin-bottom: 0.8rem;"></div>
@@ -684,13 +700,15 @@
                                 
                                 articleEl.innerHTML = `
                                     <div class="card-header">
-                                        <span class="diario-badge">${fuente}</span>
+                                        <div class="badges-wrapper">
+                                            <span class="diario-badge">${fuente}</span>
+                                            <span class="category ${catClass}">${categoriaTexto}</span>
+                                        </div>
                                         <span class="date">${formatTimeAgo(data.Fecha_Publicacion)}</span>
                                     </div>
                                     <h3 class="news-title">${titulo}</h3>
                                     <p class="news-summary">${resumen}</p>
                                     <div class="card-footer">
-                                        <span class="category ${catClass}">${categoriaTexto}</span>
                                         <a href="${link}" target="_blank" rel="noopener noreferrer" class="read-more">
                                             Leer nota <i class="fa-solid fa-arrow-right"></i>
                                         </a>
