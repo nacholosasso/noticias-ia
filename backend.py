@@ -8,6 +8,7 @@ import time  # Para el retraso (RPM)
 from bs4 import BeautifulSoup
 import firebase_admin
 from firebase_admin import credentials, firestore, initialize_app
+from google.cloud.firestore import FieldFilter
 from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 
@@ -89,7 +90,7 @@ def ejecutar_recoleccion(request=None):
     inicio_hoy = datetime.now(argentina_tz) - timedelta(days=1)
     print(f"🧹 Buscando noticias anteriores al {inicio_hoy.date()} para limpiar...")
     
-    docs_viejos = db.collection('articulos').where('Fecha_Publicacion', '<', inicio_hoy).get()
+    docs_viejos = db.collection('articulos').where(filter=FieldFilter('Fecha_Publicacion', '<', inicio_hoy)).get()
     if len(docs_viejos) > 0:
         batch = db.batch()
         for doc in docs_viejos:
@@ -98,6 +99,15 @@ def ejecutar_recoleccion(request=None):
         print(f"🗑️ Se eliminaron {len(docs_viejos)} noticias de días anteriores.")
 
     fecha_carga = datetime.now(argentina_tz)
+
+    # --- OPTIMIZACIÓN: Cargar links procesados en memoria ---
+    print("🔍 Obteniendo enlaces ya procesados para evitar consultas DB redundantes...")
+    enlaces_existentes = set()
+    try:
+        docs = db.collection('articulos').select(['Link']).get()
+        enlaces_existentes = {doc.to_dict().get('Link') for doc in docs if doc.to_dict().get('Link')}
+    except Exception as e:
+        print(f"⚠️ Error al obtener enlaces DB: {e}")
 
     for diario, url in FUENTES.items():
         try:
@@ -115,9 +125,8 @@ def ejecutar_recoleccion(request=None):
             for entrada in feed.entries:
                 link_actual = entrada.link
 
-                # Consulta eficiente: ¿Existe este link específico?
-                doc_existe = db.collection('articulos').where('Link', '==', link_actual).limit(1).get()
-                if len(doc_existe) > 0:
+                # Consulta en memoria: ¿Existe este link específico? (mucho más rápido)
+                if link_actual in enlaces_existentes:
                     print(f"⏭️ Noticia ya procesada: {entrada.title[:40]}...")
                     continue  # Cambiado a continue para no saltar noticias si hubo una interrupción
 
@@ -137,8 +146,8 @@ def ejecutar_recoleccion(request=None):
                 # GEMINI (Modelos TAL CUAL pediste)
                 resumen_ia = "Error en IA"
                 modelos_a_probar = [
-                    'gemini-3.5-flash',
                     'gemini-3.1-flash-lite-preview', 
+                    'gemini-3.5-flash',
                     'gemini-3-flash-preview', 
                     'gemini-2.5-flash-lite', 
                     'gemini-2.5-flash'
@@ -186,12 +195,12 @@ def ejecutar_recoleccion(request=None):
 
                 if guardar_en_firestore(datos, db):
                     print(f"💾 Guardado en Firestore.")
+                    enlaces_existentes.add(link_actual) # Agregamos a memoria para evitar duplicados
                 
                 # --- CONTROL DE RPM ---
-                # Aumentamos a 15 segundos para asegurar que no superamos las 5 peticiones por minuto (RPM)
-                # permitidas en el tier gratuito, dando margen al tiempo de procesamiento.
-                print("⏳ Esperando 15s para cuidar el RPM...")
-                time.sleep(15)
+                # Límite gratuito de Gemini Flash: 15 RPM (1 peticion cada 4 segs).
+                print("⏳ Esperando 5s para cuidar el RPM...")
+                time.sleep(5)
 
         except Exception as e:
             print(f"❗ Error en el bucle de {diario}: {e}")
