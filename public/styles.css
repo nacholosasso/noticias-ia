@@ -177,12 +177,14 @@ main {
 .news-card {
     background-color: var(--surface-color);
     border: 1px solid var(--border-color);
+    border-left: 3px solid var(--border-color);
     border-radius: 16px;
     padding: 1.75rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     display: flex;
     flex-direction: column;
     position: relative;
+    animation: card-in 0.4s ease both;
 }
 
 .news-card:hover {
@@ -190,6 +192,29 @@ main {
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
     border-color: var(--accent-color);
 }
+
+@keyframes card-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.news-card[data-category="deportes"] { border-left-color: var(--cat-deportes); }
+.news-card[data-category="politica"] { border-left-color: var(--cat-politica); }
+.news-card[data-category="economia"] { border-left-color: var(--cat-economia); }
+.news-card[data-category="espectaculos"] { border-left-color: var(--cat-espectaculos); }
+.news-card[data-category="tecnologia"] { border-left-color: var(--cat-tecnologia); }
+.news-card[data-category="salud"] { border-left-color: var(--cat-salud); }
+.news-card[data-category="sociedad"] { border-left-color: var(--cat-sociedad); }
+.news-card[data-category="general"] { border-left-color: var(--cat-general); }
+
+.news-card[data-category="deportes"]:hover { border-color: var(--cat-deportes); box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25); }
+.news-card[data-category="politica"]:hover { border-color: var(--cat-politica); box-shadow: 0 12px 30px rgba(239, 68, 68, 0.25); }
+.news-card[data-category="economia"]:hover { border-color: var(--cat-economia); box-shadow: 0 12px 30px rgba(234, 179, 8, 0.25); }
+.news-card[data-category="espectaculos"]:hover { border-color: var(--cat-espectaculos); box-shadow: 0 12px 30px rgba(236, 72, 153, 0.25); }
+.news-card[data-category="tecnologia"]:hover { border-color: var(--cat-tecnologia); box-shadow: 0 12px 30px rgba(59, 130, 246, 0.25); }
+.news-card[data-category="salud"]:hover { border-color: var(--cat-salud); box-shadow: 0 12px 30px rgba(6, 182, 212, 0.25); }
+.news-card[data-category="sociedad"]:hover { border-color: var(--cat-sociedad); box-shadow: 0 12px 30px rgba(139, 92, 246, 0.25); }
+.news-card[data-category="general"]:hover { border-color: var(--cat-general); box-shadow: 0 12px 30px rgba(100, 116, 139, 0.25); }
 
 .card-header {
     display: flex;
