@@ -519,6 +519,27 @@ footer {
     font-size: 0.875rem;
 }
 
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.footer-tech {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+}
+
+.footer-tech a {
+    color: var(--accent-color);
+    text-decoration: none;
+}
+
+.footer-tech a:hover {
+    text-decoration: underline;
+}
+
 /* Responsive */
 @media (max-width: 850px) {
     .contact-container {
