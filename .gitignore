@@ -16,3 +16,6 @@ __pycache__/
 
 # Firebase cache
 .firebase/
+
+# Caché local de Claude Code (skills, etc.)
+.claude/
