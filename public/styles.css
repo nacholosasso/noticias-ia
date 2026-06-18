@@ -550,3 +550,31 @@ footer {
         font-size: 2.25rem;
     }
 }
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 1rem;
+    }
+    .hero h1 {
+        font-size: 1.85rem;
+    }
+    .hero p {
+        font-size: 1rem;
+    }
+    .hero-badges {
+        gap: 0.5rem;
+    }
+    .hero-badge {
+        font-size: 0.7rem;
+        padding: 0.35rem 0.7rem;
+    }
+    .news-card {
+        padding: 1.25rem;
+    }
+    .contact-form {
+        padding: 1.5rem;
+    }
+    .social-btn {
+        padding: 0.85rem 1.1rem;
+    }
+}
