@@ -379,35 +379,10 @@ main {
     justify-content: center;
 }
 
-.contact-info h2 {
-    font-size: 2.25rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
-}
-
 .contact-info p {
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    font-size: 1.05rem;
-}
-
-.tech-stack {
-    display: flex;
-    gap: 0.6rem;
-    flex-wrap: wrap;
     margin-bottom: 2.5rem;
-}
-
-.tech-badge {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--accent-color);
-    background-color: var(--accent-soft);
-    border: 1px solid rgba(245, 185, 66, 0.3);
-    padding: 0.35rem 0.85rem;
-    border-radius: 6px;
-    letter-spacing: 0.3px;
+    font-size: 1.05rem;
 }
 
 .social-links {
