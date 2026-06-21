@@ -238,9 +238,15 @@ def ejecutar_recoleccion(request=None):
                     client, prompt, config_respuesta, modelos_a_probar, modelos_agotados, diario
                 )
 
+                # Si ningún modelo respondió y el único motivo fue falta de cupo
+                # (no un error real), no se guarda: se reintenta en la próxima corrida.
+                if not exito and not hubo_error_no_cuota:
+                    print(f"⏭️ Sin cupo en ningún modelo para '{entrada.title[:40]}...', se reintentará en la próxima corrida.")
+                    continue
+
                 # Preparar y guardar
                 datos = {
-                    "Diario": diario, 
+                    "Diario": diario,
                     "Fecha_Carga": fecha_carga,
                     "Fecha_Publicacion": fecha_publicacion,
                     "Categoria": categoria_ia,
@@ -253,11 +259,13 @@ def ejecutar_recoleccion(request=None):
                 if guardar_en_firestore(datos, db):
                     print(f"💾 Guardado en Firestore.")
                     enlaces_existentes.add(link_actual) # Agregamos a memoria para evitar duplicados
-                
+
                 # --- CONTROL DE RPM ---
-                # Límite gratuito de Gemini Flash: 15 RPM (1 peticion cada 4 segs).
-                print("⏳ Esperando 5s para cuidar el RPM...")
-                time.sleep(5)
+                # Ritmo según el modelo que realmente respondió; 5s por defecto
+                # si se guardó con placeholder sin éxito de ningún modelo.
+                espera = math.ceil(60 / RPM_POR_MODELO[modelo_usado]) + 1 if exito else 5
+                print(f"⏳ Esperando {espera}s para cuidar el RPM...")
+                time.sleep(espera)
 
         except Exception as e:
             print(f"❗ Error en el bucle de {diario}: {e}")
