@@ -31,8 +31,6 @@ function getCategoryClass(cat) {
 }
 
 function initApp() {
-    document.getElementById('year').textContent = new Date().getFullYear();
-
     const filterBtns = document.querySelectorAll('.filter-btn');
 
     filterBtns.forEach(btn => {
