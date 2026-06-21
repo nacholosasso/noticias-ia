@@ -379,12 +379,6 @@ main {
     justify-content: center;
 }
 
-.contact-info p {
-    color: var(--text-secondary);
-    margin-bottom: 2.5rem;
-    font-size: 1.05rem;
-}
-
 .social-links {
     display: flex;
     flex-direction: column;
