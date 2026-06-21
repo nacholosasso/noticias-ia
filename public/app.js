@@ -74,6 +74,10 @@ function initApp() {
         const newsContainer = document.getElementById('news-container');
 
         if (typeof firebase !== 'undefined') {
+            if (typeof firebase.analytics === 'function') {
+                firebase.analytics();
+            }
+
             const db = firebase.firestore();
 
             db.collection('articulos')
