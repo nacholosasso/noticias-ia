@@ -6,6 +6,8 @@ import os
 import re
 import requests
 import time  # Para el retraso (RPM)
+import math
+from google.genai import errors as genai_errors
 from bs4 import BeautifulSoup
 import firebase_admin
 from firebase_admin import credentials, firestore, initialize_app
@@ -29,6 +31,16 @@ FUENTES = {
     "Olé": "https://www.ole.com.ar/rss/ultimas-noticias/",
     "Caras": "https://caras.perfil.com/feed",
     "Ambito": "https://www.ambito.com/rss/pages/home.xml",
+}
+
+# RPM de la capa gratuita por modelo (tier free de AI Studio, ver spec).
+# Se usa para pacear el sleep entre noticias según el modelo que respondió.
+RPM_POR_MODELO = {
+    'gemini-3.1-flash-lite-preview': 15,
+    'gemini-3.5-flash': 5,
+    'gemini-3-flash-preview': 5,
+    'gemini-2.5-flash-lite': 10,
+    'gemini-2.5-flash': 5,
 }
 
 FIREBASE_CREDS = "firebase-creds.json"
@@ -72,6 +84,10 @@ def extraer_cuerpo_noticia(url):
         return " ".join(texto_sucio.split())[:4000]
     except:
         return ""
+
+def es_error_de_cuota(e: Exception) -> bool:
+    """True si la excepción es un 429 (RPM/RPD/TPM agotado) del SDK de Gemini."""
+    return isinstance(e, genai_errors.ClientError) and e.code == 429
 
 # ==========================================
 # BUCLE PRINCIPAL
