@@ -4,7 +4,7 @@ Un agregador y resumidor de noticias automatizado construido con Python, Firebas
 
 ## 🚀 Descripción del Proyecto
 
-Este proyecto consiste en un backend que recolecta periódicamente noticias de diferentes diarios argentinos (Olé, Caras y Ámbito) a través de sus feeds RSS. Utiliza web scraping para extraer el cuerpo de las noticias y la inteligencia artificial de **Google Gemini** para generar un resumen conciso (párrafo de entre 40 y 60 palabras) y clasificar cada artículo en una categoría (Deportes, Política, Economía, Espectáculos, Tecnología, Salud o Sociedad). 
+Este proyecto consiste en un backend que recolecta periódicamente noticias de diferentes diarios argentinos (Olé, Caras, Ámbito y Clarín) a través de sus feeds RSS. Utiliza web scraping para extraer el cuerpo de las noticias y la inteligencia artificial de **Google Gemini** para generar un resumen conciso (párrafo de entre 40 y 60 palabras) y clasificar cada artículo en una categoría (Deportes, Política, Economía, Espectáculos, Tecnología, Salud o Sociedad). 
 
 La información procesada se almacena en una base de datos **Firestore** para ser consumida por un frontend alojado en **Firebase Hosting**.
 
@@ -36,7 +36,7 @@ La información procesada se almacena en una base de datos **Firestore** para se
 2. **Instalar dependencias:**
    Se recomienda usar un entorno virtual (venv).
    ```bash
-   pip install feedparser google-genai pandas requests beautifulsoup4 firebase-admin python-dotenv
+   pip install -r requirements.txt
    ```
 
 3. **Variables de Entorno:**
@@ -45,6 +45,7 @@ La información procesada se almacena en una base de datos **Firestore** para se
    OLE_API_KEY=tu_api_key_aqui
    CARAS_API_KEY=tu_api_key_aqui
    AMBITO_API_KEY=tu_api_key_aqui
+   CLARIN_API_KEY=tu_api_key_aqui
    ```
 
 4. **Credenciales de Firebase:**
@@ -60,10 +61,28 @@ La información procesada se almacena en una base de datos **Firestore** para se
 El proyecto está configurado para desplegarse como un Cloud Run Job utilizando Google Cloud CLI. Para actualizar el backend en la nube, ejecuta:
 
 ```bash
-gcloud run jobs deploy noticias-backend-job --project=<TU_ID_DE_PROYECTO> --source . --region us-central1 --task-timeout 1200 --memory 512Mi --command python --args backend.py --set-env-vars "OLE_API_KEY=tu_key,CARAS_API_KEY=tu_key,AMBITO_API_KEY=tu_key"
+gcloud run jobs deploy noticias-backend-job --project=<TU_ID_DE_PROYECTO> --source . --region us-central1 --task-timeout 1200 --memory 512Mi --command python --args backend.py --set-env-vars "OLE_API_KEY=tu_key,CARAS_API_KEY=tu_key,AMBITO_API_KEY=tu_key,CLARIN_API_KEY=tu_key"
 ```
 
 Y para desplegar cambios del frontend:
 ```bash
 firebase deploy --only hosting
+```
+
+### Ejecución periódica (Cloud Scheduler)
+
+El Job no corre solo: un trigger de **Cloud Scheduler** lo invoca cada cierto intervalo (la frecuencia se ajustó varias veces, así que conviene chequearla en vez de asumirla):
+
+```bash
+gcloud scheduler jobs describe noticias-backend-job-scheduler-trigger --location us-central1 --project=<TU_ID_DE_PROYECTO>
+```
+
+Para crearlo desde cero (reemplazando el intervalo según necesidad):
+```bash
+gcloud scheduler jobs create http noticias-backend-job-scheduler-trigger \
+  --location us-central1 \
+  --schedule "0 */2 * * *" \
+  --uri "https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/<TU_ID_DE_PROYECTO>/jobs/noticias-backend-job:run" \
+  --http-method POST \
+  --oauth-service-account-email <SERVICE_ACCOUNT_EMAIL>
 ```
