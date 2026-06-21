@@ -218,7 +218,7 @@ def ejecutar_recoleccion(request=None):
                     'gemini-2.5-flash'
                 ]
 
-                prompt = f"Sos un periodista experto. Resumí la siguiente noticia en un párrafo de entre 70 y 90 palabras y clasificala en una categoría. REGLA ESTRICTA: básate ÚNICA Y EXCLUSIVAMENTE en el texto proporcionado. NO agregues información externa, no inventes datos y NO asumas nombres de personas (como entrenadores, funcionarios o jugadores) que no estén explícitamente escritos en el texto.\n\nNoticia:\n{texto_para_ia}"
+                prompt = f"Sos un periodista experto. Resumí la siguiente noticia en un único párrafo de entre 100 y 120 palabras y clasificala en una categoría. Apuntá a la parte alta del rango (cerca de 120) siempre que el texto dé material suficiente; si la noticia es muy escueta, priorizá la precisión y NO rellenes con frases vacías. REGLA ESTRICTA: básate ÚNICA Y EXCLUSIVAMENTE en el texto proporcionado. NO agregues información externa, no inventes datos y NO asumas nombres de personas (como entrenadores, funcionarios o jugadores) que no estén explícitamente escritos en el texto.\n\nNoticia:\n{texto_para_ia}"
 
                 config_respuesta = {
                     'response_mime_type': 'application/json',
