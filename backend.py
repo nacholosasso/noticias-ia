@@ -89,6 +89,47 @@ def es_error_de_cuota(e: Exception) -> bool:
     """True si la excepción es un 429 (RPM/RPD/TPM agotado) del SDK de Gemini."""
     return isinstance(e, genai_errors.ClientError) and e.code == 429
 
+def elegir_resumen_ia(client, prompt, config_respuesta, modelos_a_probar, modelos_agotados, diario):
+    """Prueba los modelos en orden, salteando los que ya están en `modelos_agotados`
+    (mutado in-place: agrega ahí cualquier modelo que devuelva 429 en este intento).
+    Devuelve (resumen_ia, categoria_ia, exito, modelo_usado, hubo_error_no_cuota)."""
+    resumen_ia = "Error en IA"
+    categoria_ia = "General"
+    exito = False
+    hubo_error_no_cuota = False
+    modelo_usado = None
+
+    for nombre_modelo in modelos_a_probar:
+        if nombre_modelo in modelos_agotados:
+            continue
+
+        try:
+            print(f"🤖 Intentando con: {nombre_modelo} para {diario}...")
+            response = client.models.generate_content(
+                model=nombre_modelo,
+                contents=prompt,
+                config=config_respuesta
+            )
+            datos_ia = json.loads(response.text)
+            resumen_ia = datos_ia['resumen'].strip()
+            categoria_ia = datos_ia['categoria']
+            modelo_usado = nombre_modelo
+            exito = True
+
+            print(f"🤖 [{diario}] OK con: {nombre_modelo}")
+            break
+        except Exception as e:
+            if es_error_de_cuota(e):
+                print(f"🚫 {nombre_modelo} sin cupo (cuota agotada) para {diario}, se descarta por el resto de esta corrida.")
+                modelos_agotados.add(nombre_modelo)
+            else:
+                print(f"❌ Error en {diario} con {nombre_modelo}: {e}")
+                hubo_error_no_cuota = True
+                time.sleep(3)
+            continue
+
+    return resumen_ia, categoria_ia, exito, modelo_usado, hubo_error_no_cuota
+
 # ==========================================
 # BUCLE PRINCIPAL
 # ==========================================
@@ -137,7 +178,13 @@ def ejecutar_recoleccion(request=None):
                 print(f"⚠️ Sin API Key para {diario}, saltando...")
                 continue
             client = genai.Client(api_key=api_key)
-            
+
+            # Lista negra de modelos sin cupo para ESTA corrida de este diario.
+            # No se persiste: si la cuota diaria sigue agotada en la próxima
+            # corrida, el primer intento vuelve a fallar una vez (gratis) y
+            # repuebla esta lista.
+            modelos_agotados = set()
+
             # RECORREMOS TODAS LAS NOTICIAS DEL RSS
             for entrada in feed.entries:
                 link_actual = entrada.link
@@ -161,8 +208,6 @@ def ejecutar_recoleccion(request=None):
                 texto_para_ia = cuerpo_nota if len(cuerpo_nota) > 150 else resumen_rss
 
                 # GEMINI (Modelos TAL CUAL pediste)
-                resumen_ia = "Error en IA"
-                categoria_ia = "General"
                 modelos_a_probar = [
                     'gemini-3.1-flash-lite-preview',
                     'gemini-3.5-flash',
@@ -189,25 +234,9 @@ def ejecutar_recoleccion(request=None):
                     },
                 }
 
-                for nombre_modelo in modelos_a_probar:
-                    try:
-                        print(f"🤖 Intentando con: {nombre_modelo} para {diario}...")
-                        response = client.models.generate_content(
-                            model=nombre_modelo,
-                            contents=prompt,
-                            config=config_respuesta
-                        )
-                        datos_ia = json.loads(response.text)
-                        resumen_ia = datos_ia['resumen'].strip()
-                        categoria_ia = datos_ia['categoria']
-
-                        print(f"🤖 [{diario}] OK con: {nombre_modelo}")
-                        break
-                    except Exception as e:
-                        print(f"❌ Error en {diario} con {nombre_modelo}: {e}")
-                        # Esperamos 10 segundos antes de intentar con otro modelo para no saturar el RPM
-                        time.sleep(10)
-                        continue
+                resumen_ia, categoria_ia, exito, modelo_usado, hubo_error_no_cuota = elegir_resumen_ia(
+                    client, prompt, config_respuesta, modelos_a_probar, modelos_agotados, diario
+                )
 
                 # Preparar y guardar
                 datos = {
