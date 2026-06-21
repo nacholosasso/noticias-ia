@@ -1,6 +1,7 @@
 import feedparser
 from google import genai
 import pandas as pd
+import json
 import os
 import re
 import requests
@@ -145,36 +146,47 @@ def ejecutar_recoleccion(request=None):
 
                 # GEMINI (Modelos TAL CUAL pediste)
                 resumen_ia = "Error en IA"
+                categoria_ia = "General"
                 modelos_a_probar = [
-                    'gemini-3.1-flash-lite-preview', 
+                    'gemini-3.1-flash-lite-preview',
                     'gemini-3.5-flash',
-                    'gemini-3-flash-preview', 
-                    'gemini-2.5-flash-lite', 
+                    'gemini-3-flash-preview',
+                    'gemini-2.5-flash-lite',
                     'gemini-2.5-flash'
                 ]
-                
-                prompt = f"Sos un periodista experto. Resumí la siguiente noticia en máximo 4 oraciones. REGLA ESTRICTA: básate ÚNICA Y EXCLUSIVAMENTE en el texto proporcionado. NO agregues información externa, no inventes datos y NO asumas nombres de personas (como entrenadores, funcionarios o jugadores) que no estén explícitamente escritos en el texto. Al final, añade una línea que diga 'Categoría: ' seguida de una sola palabra (Deportes, Política, Economía, Espectáculos, Tecnología, Salud o Sociedad) que mejor describa la noticia.\n\nNoticia:\n{texto_para_ia}"
-                
+
+                prompt = f"Sos un periodista experto. Resumí la siguiente noticia en un párrafo de entre 40 y 60 palabras y clasificala en una categoría. REGLA ESTRICTA: básate ÚNICA Y EXCLUSIVAMENTE en el texto proporcionado. NO agregues información externa, no inventes datos y NO asumas nombres de personas (como entrenadores, funcionarios o jugadores) que no estén explícitamente escritos en el texto.\n\nNoticia:\n{texto_para_ia}"
+
+                config_respuesta = {
+                    'response_mime_type': 'application/json',
+                    'response_schema': {
+                        'type': 'OBJECT',
+                        'properties': {
+                            'resumen': {'type': 'STRING'},
+                            'categoria': {
+                                'type': 'STRING',
+                                'format': 'enum',
+                                'enum': ['Deportes', 'Política', 'Economía', 'Espectáculos', 'Tecnología', 'Salud', 'Sociedad'],
+                            },
+                        },
+                        'required': ['resumen', 'categoria'],
+                    },
+                }
+
                 for nombre_modelo in modelos_a_probar:
                     try:
                         print(f"🤖 Intentando con: {nombre_modelo} para {diario}...")
                         response = client.models.generate_content(
                             model=nombre_modelo,
-                            contents=prompt
+                            contents=prompt,
+                            config=config_respuesta
                         )
-                        respuesta_completa = response.text.strip()
-                        
-                        # Separar resumen de categoría
-                        if "Categoría:" in respuesta_completa:
-                            partes = respuesta_completa.split("Categoría:")
-                            resumen_ia = partes[0].strip()
-                            categoria_ia = partes[1].strip().replace(".", "")
-                        else:
-                            resumen_ia = respuesta_completa
-                            categoria_ia = "General"
+                        datos_ia = json.loads(response.text)
+                        resumen_ia = datos_ia['resumen'].strip()
+                        categoria_ia = datos_ia['categoria']
 
                         print(f"🤖 [{diario}] OK con: {nombre_modelo}")
-                        break 
+                        break
                     except Exception as e:
                         print(f"❌ Error en {diario} con {nombre_modelo}: {e}")
                         # Esperamos 10 segundos antes de intentar con otro modelo para no saturar el RPM

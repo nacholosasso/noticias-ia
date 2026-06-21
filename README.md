@@ -4,14 +4,14 @@ Un agregador y resumidor de noticias automatizado construido con Python, Firebas
 
 ## 🚀 Descripción del Proyecto
 
-Este proyecto consiste en un backend que recolecta periódicamente noticias de diferentes diarios argentinos (Olé, Caras y Ámbito) a través de sus feeds RSS. Utiliza web scraping para extraer el cuerpo de las noticias y la inteligencia artificial de **Google Gemini** para generar un resumen conciso (máximo 4 oraciones) y clasificar cada artículo en una categoría (Deportes, Política, Economía, Espectáculos, Tecnología, Salud o Sociedad). 
+Este proyecto consiste en un backend que recolecta periódicamente noticias de diferentes diarios argentinos (Olé, Caras y Ámbito) a través de sus feeds RSS. Utiliza web scraping para extraer el cuerpo de las noticias y la inteligencia artificial de **Google Gemini** para generar un resumen conciso (párrafo de entre 40 y 60 palabras) y clasificar cada artículo en una categoría (Deportes, Política, Economía, Espectáculos, Tecnología, Salud o Sociedad). 
 
 La información procesada se almacena en una base de datos **Firestore** para ser consumida por un frontend alojado en **Firebase Hosting**.
 
 ## ✨ Características Principales
 
 - **Extracción Automática:** Lectura de feeds RSS y scraping del contenido de las noticias usando `feedparser` y `BeautifulSoup`.
-- **Inteligencia Artificial:** Resúmenes y categorización inteligente de texto usando la API de Google Gemini (integrando los últimos modelos de la familia Flash).
+- **Inteligencia Artificial:** Resúmenes y categorización inteligente de texto usando la API de Google Gemini (integrando los últimos modelos de la familia Flash), con salida estructurada (JSON Schema) para garantizar categorías válidas.
 - **Gestión de Base de Datos:** Almacenamiento en Google Cloud Firestore con un sistema de limpieza automática que elimina las noticias con más de 24 horas de antigüedad.
 - **Control de RPM:** Manejo inteligente de tiempos de espera (`sleep`) para no exceder los límites de uso de la capa gratuita de las APIs.
 - **Despliegue en la Nube:** Configurado para ejecutarse periódicamente como un Job en **Google Cloud Run**.
