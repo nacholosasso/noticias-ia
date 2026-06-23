@@ -21,13 +21,29 @@ function formatTimeAgo(dateInput) {
     }
 }
 
+function normalizeText(str) {
+    if (!str) return '';
+    return str.toLowerCase().normalize('NFD').replace(/\p{Mn}/gu, '');
+}
+
 function getCategoryClass(cat) {
     if (!cat) return 'cat-general';
 
-    const normalized = cat.toLowerCase().normalize("NFD").replace(/\p{Mn}/gu, "");
+    const normalized = normalizeText(cat);
     const validCats = ['deportes', 'politica', 'economia', 'espectaculos', 'tecnologia', 'salud', 'sociedad'];
 
     return validCats.includes(normalized) ? `cat-${normalized}` : 'cat-general';
+}
+
+function getUniqueDiarios(articles) {
+    const seen = new Map();
+    articles.forEach(({ Diario }) => {
+        if (!Diario) return;
+        const value = normalizeText(Diario);
+        if (!seen.has(value)) seen.set(value, Diario);
+    });
+    return Array.from(seen, ([value, label]) => ({ value, label }))
+        .sort((a, b) => a.label.localeCompare(b.label));
 }
 
 function initApp() {
@@ -140,5 +156,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { formatTimeAgo, getCategoryClass };
+    module.exports = { formatTimeAgo, getCategoryClass, normalizeText, getUniqueDiarios };
 }

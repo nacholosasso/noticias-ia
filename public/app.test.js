@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { formatTimeAgo, getCategoryClass } = require('./app.js');
+const { formatTimeAgo, getCategoryClass, normalizeText, getUniqueDiarios } = require('./app.js');
 
 test('getCategoryClass normaliza tildes y mayúsculas', () => {
     assert.equal(getCategoryClass('Política'), 'cat-politica');
@@ -30,4 +30,33 @@ test('formatTimeAgo soporta objetos Firestore Timestamp con .toDate()', () => {
 
 test('formatTimeAgo devuelve string vacío si no hay fecha', () => {
     assert.equal(formatTimeAgo(null), '');
+});
+
+test('normalizeText quita tildes y pasa a minusculas', () => {
+    assert.equal(normalizeText('Política'), 'politica');
+    assert.equal(normalizeText('CLARÍN'), 'clarin');
+});
+
+test('normalizeText devuelve string vacio para valores vacios', () => {
+    assert.equal(normalizeText(null), '');
+    assert.equal(normalizeText(undefined), '');
+    assert.equal(normalizeText(''), '');
+});
+
+test('getUniqueDiarios devuelve diarios unicos ordenados alfabeticamente por label', () => {
+    const articles = [
+        { Diario: 'Clarin' },
+        { Diario: 'Ambito' },
+        { Diario: 'Clarin' },
+        { Diario: 'Ole' },
+    ];
+    assert.deepEqual(getUniqueDiarios(articles), [
+        { value: 'ambito', label: 'Ambito' },
+        { value: 'clarin', label: 'Clarin' },
+        { value: 'ole', label: 'Ole' },
+    ]);
+});
+
+test('getUniqueDiarios ignora articulos sin diario', () => {
+    assert.deepEqual(getUniqueDiarios([{ Diario: '' }, { Diario: null }, {}]), []);
 });
