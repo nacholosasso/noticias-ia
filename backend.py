@@ -25,14 +25,12 @@ API_KEYS = {
     "Olé": os.getenv("OLE_API_KEY"),
     "Caras": os.getenv("CARAS_API_KEY"),
     "Ambito": os.getenv("AMBITO_API_KEY"),
-    "Clarin": os.getenv("CLARIN_API_KEY")
 }
 
 FUENTES = {
     "Olé": "https://www.ole.com.ar/rss/ultimas-noticias/",
     "Caras": "https://caras.perfil.com/feed",
     "Ambito": "https://www.ambito.com/rss/pages/home.xml",
-    "Clarin": "https://www.clarin.com/rss/lo-ultimo/",
 }
 
 # RPM de la capa gratuita por modelo (tier free de AI Studio, ver spec).

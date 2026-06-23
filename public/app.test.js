@@ -34,7 +34,7 @@ test('formatTimeAgo devuelve string vacío si no hay fecha', () => {
 
 test('normalizeText quita tildes y pasa a minusculas', () => {
     assert.equal(normalizeText('Política'), 'politica');
-    assert.equal(normalizeText('CLARÍN'), 'clarin');
+    assert.equal(normalizeText('OLÉ'), 'ole');
 });
 
 test('normalizeText devuelve string vacio para valores vacios', () => {
@@ -45,14 +45,14 @@ test('normalizeText devuelve string vacio para valores vacios', () => {
 
 test('getUniqueDiarios devuelve diarios unicos ordenados alfabeticamente por label', () => {
     const articles = [
-        { Diario: 'Clarin' },
+        { Diario: 'Caras' },
         { Diario: 'Ambito' },
-        { Diario: 'Clarin' },
+        { Diario: 'Caras' },
         { Diario: 'Ole' },
     ];
     assert.deepEqual(getUniqueDiarios(articles), [
         { value: 'ambito', label: 'Ambito' },
-        { value: 'clarin', label: 'Clarin' },
+        { value: 'caras', label: 'Caras' },
         { value: 'ole', label: 'Ole' },
     ]);
 });

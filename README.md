@@ -4,7 +4,7 @@ Un agregador y resumidor de noticias automatizado construido con Python, Firebas
 
 ## 🚀 Descripción del Proyecto
 
-Este proyecto consiste en un backend que recolecta periódicamente noticias de diferentes diarios argentinos (Olé, Caras, Ámbito y Clarín) a través de sus feeds RSS. Utiliza web scraping para extraer el cuerpo de las noticias y la inteligencia artificial de **Google Gemini** para generar un resumen conciso (párrafo de entre 40 y 60 palabras) y clasificar cada artículo en una categoría (Deportes, Política, Economía, Espectáculos, Tecnología, Salud o Sociedad). 
+Este proyecto consiste en un backend que recolecta periódicamente noticias de diferentes diarios argentinos (Olé, Caras y Ámbito) a través de sus feeds RSS. Utiliza web scraping para extraer el cuerpo de las noticias y la inteligencia artificial de **Google Gemini** para generar un resumen conciso (párrafo de entre 40 y 60 palabras) y clasificar cada artículo en una categoría (Deportes, Política, Economía, Espectáculos, Tecnología, Salud o Sociedad). 
 
 La información procesada se almacena en una base de datos **Firestore** para ser consumida por un frontend alojado en **Firebase Hosting**.
 
@@ -45,7 +45,6 @@ La información procesada se almacena en una base de datos **Firestore** para se
    OLE_API_KEY=tu_api_key_aqui
    CARAS_API_KEY=tu_api_key_aqui
    AMBITO_API_KEY=tu_api_key_aqui
-   CLARIN_API_KEY=tu_api_key_aqui
    ```
 
 4. **Credenciales de Firebase:**
@@ -61,7 +60,7 @@ La información procesada se almacena en una base de datos **Firestore** para se
 El proyecto está configurado para desplegarse como un Cloud Run Job utilizando Google Cloud CLI. Para actualizar el backend en la nube, ejecuta:
 
 ```bash
-gcloud run jobs deploy noticias-backend-job --project=<TU_ID_DE_PROYECTO> --source . --region us-central1 --task-timeout 1200 --memory 512Mi --command python --args backend.py --set-env-vars "OLE_API_KEY=tu_key,CARAS_API_KEY=tu_key,AMBITO_API_KEY=tu_key,CLARIN_API_KEY=tu_key"
+gcloud run jobs deploy noticias-backend-job --project=<TU_ID_DE_PROYECTO> --source . --region us-central1 --task-timeout 1200 --memory 512Mi --command python --args backend.py --set-env-vars "OLE_API_KEY=tu_key,CARAS_API_KEY=tu_key,AMBITO_API_KEY=tu_key"
 ```
 
 Y para desplegar cambios del frontend:
