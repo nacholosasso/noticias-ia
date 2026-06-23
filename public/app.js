@@ -57,45 +57,65 @@ function renderDiarioFilters(articlesData) {
     });
 }
 
-function initApp() {
-    const filterBtns = document.querySelectorAll('.filter-btn');
+function applyFilters() {
+    const activeCategoryBtn = document.querySelector('#category-filters .filter-btn.active');
+    const activeDiarioBtn = document.querySelector('#diario-filters .filter-btn.active');
+    const activeCategoria = activeCategoryBtn ? activeCategoryBtn.getAttribute('data-filter') : 'all';
+    const activeDiario = activeDiarioBtn ? activeDiarioBtn.getAttribute('data-diario-filter') : 'all';
+    const searchInput = document.getElementById('search-input');
+    const searchTerm = searchInput ? normalizeText(searchInput.value.trim()) : '';
 
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+    const allCards = document.querySelectorAll('#news-container .news-card');
+    let visibleCount = 0;
 
-            const filterValue = btn.getAttribute('data-filter');
-            const allCards = document.querySelectorAll('#news-container .news-card');
-            let visibleCount = 0;
+    allCards.forEach(card => {
+        if (card.querySelector('.skeleton')) return;
 
-            allCards.forEach(card => {
-                if (card.querySelector('.skeleton')) return;
+        const matchCategoria = activeCategoria === 'all' || card.getAttribute('data-category') === activeCategoria;
+        const matchDiario = activeDiario === 'all' || card.getAttribute('data-diario') === activeDiario;
+        const matchBusqueda = searchTerm === '' || card.getAttribute('data-search').includes(searchTerm);
+        const visible = matchCategoria && matchDiario && matchBusqueda;
 
-                if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
-                    card.classList.remove('hidden');
-                    visibleCount++;
-                } else {
-                    card.classList.add('hidden');
-                }
-            });
-
-            let emptyMsg = document.getElementById('empty-filter-msg');
-            if (visibleCount === 0 && allCards.length > 0 && !allCards[0].querySelector('.skeleton')) {
-                if (!emptyMsg) {
-                    emptyMsg = document.createElement('p');
-                    emptyMsg.id = 'empty-filter-msg';
-                    emptyMsg.style.cssText = 'grid-column: 1/-1; text-align:center; color: var(--text-secondary); padding: 2rem 0;';
-                    emptyMsg.textContent = 'No hay noticias recientes para esta categoría.';
-                    document.getElementById('news-container').appendChild(emptyMsg);
-                } else {
-                    emptyMsg.style.display = 'block';
-                }
-            } else if (emptyMsg) {
-                emptyMsg.style.display = 'none';
-            }
-        });
+        card.classList.toggle('hidden', !visible);
+        if (visible) visibleCount++;
     });
+
+    let emptyMsg = document.getElementById('empty-filter-msg');
+    const hasRealCards = allCards.length > 0 && !allCards[0].querySelector('.skeleton');
+
+    if (visibleCount === 0 && hasRealCards) {
+        if (!emptyMsg) {
+            emptyMsg = document.createElement('p');
+            emptyMsg.id = 'empty-filter-msg';
+            emptyMsg.style.cssText = 'grid-column: 1/-1; text-align:center; color: var(--text-secondary); padding: 2rem 0;';
+            emptyMsg.textContent = 'No hay noticias que coincidan con los filtros seleccionados.';
+            document.getElementById('news-container').appendChild(emptyMsg);
+        } else {
+            emptyMsg.style.display = 'block';
+        }
+    } else if (emptyMsg) {
+        emptyMsg.style.display = 'none';
+    }
+}
+
+function initApp() {
+    document.getElementById('category-filters').addEventListener('click', (e) => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        document.querySelectorAll('#category-filters .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
+    });
+
+    document.getElementById('diario-filters').addEventListener('click', (e) => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        document.querySelectorAll('#diario-filters .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
+    });
+
+    document.getElementById('search-input').addEventListener('input', applyFilters);
 
     setTimeout(() => {
         const newsContainer = document.getElementById('news-container');
@@ -161,6 +181,7 @@ function initApp() {
                     });
 
                     renderDiarioFilters(articlesData);
+                    applyFilters();
                 })
                 .catch((error) => {
                     console.error("Error obteniendo noticias:", error);
