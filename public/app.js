@@ -46,6 +46,17 @@ function getUniqueDiarios(articles) {
         .sort((a, b) => a.label.localeCompare(b.label));
 }
 
+function renderDiarioFilters(articlesData) {
+    const diarioContainer = document.getElementById('diario-filters');
+    getUniqueDiarios(articlesData).forEach(({ value, label }) => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn';
+        btn.setAttribute('data-diario-filter', value);
+        btn.innerHTML = `<i class="fa-solid fa-newspaper"></i> ${label}`;
+        diarioContainer.appendChild(btn);
+    });
+}
+
 function initApp() {
     const filterBtns = document.querySelectorAll('.filter-btn');
 
@@ -108,8 +119,12 @@ function initApp() {
                         return;
                     }
 
+                    const articlesData = [];
+
                     querySnapshot.forEach((doc) => {
                         const data = doc.data();
+                        articlesData.push(data);
+
                         const articleEl = document.createElement('article');
                         articleEl.className = 'news-card';
 
@@ -120,6 +135,10 @@ function initApp() {
                         const fuente = data.Diario || 'Fuente';
                         const link = data.Link || '#';
                         const categoriaTexto = data.Categoria || 'General';
+
+                        articleEl.setAttribute('data-diario', normalizeText(data.Diario));
+                        articleEl.setAttribute('data-diario-label', data.Diario || '');
+                        articleEl.setAttribute('data-search', normalizeText(`${titulo} ${resumen}`));
 
                         articleEl.innerHTML = `
                             <div class="card-header">
@@ -140,6 +159,8 @@ function initApp() {
 
                         newsContainer.appendChild(articleEl);
                     });
+
+                    renderDiarioFilters(articlesData);
                 })
                 .catch((error) => {
                     console.error("Error obteniendo noticias:", error);
