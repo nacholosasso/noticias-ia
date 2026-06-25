@@ -98,6 +98,65 @@ function applyFilters() {
     }
 }
 
+function renderArticles(articlesData) {
+    const newsContainer = document.getElementById('news-container');
+    newsContainer.innerHTML = '';
+
+    if (!articlesData || articlesData.length === 0) {
+        newsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color: var(--text-secondary);">No hay noticias disponibles en este momento.</p>';
+        return;
+    }
+
+    articlesData.forEach((data) => {
+        const articleEl = document.createElement('article');
+        articleEl.className = 'news-card';
+
+        const catClass = getCategoryClass(data.Categoria);
+        articleEl.setAttribute('data-category', catClass.replace('cat-', ''));
+        const titulo = data.Titulo || 'Sin título';
+        const resumen = data.Resumen_IA || data.Resumen_Web || 'Sin resumen disponible.';
+        const fuente = data.Diario || 'Fuente';
+        const link = data.Link || '#';
+        const categoriaTexto = data.Categoria || 'General';
+
+        articleEl.setAttribute('data-diario', normalizeText(data.Diario));
+        articleEl.setAttribute('data-diario-label', data.Diario || '');
+        articleEl.setAttribute('data-search', normalizeText(`${titulo} ${resumen}`));
+
+        articleEl.innerHTML = `
+            <div class="card-header">
+                <div class="badges-wrapper">
+                    <span class="diario-badge">${fuente}</span>
+                    <span class="category ${catClass}">${categoriaTexto}</span>
+                </div>
+                <span class="date">${formatTimeAgo(data.Fecha_Publicacion)}</span>
+            </div>
+            <h3 class="news-title">${titulo}</h3>
+            <p class="news-summary">${resumen}</p>
+            <div class="card-footer">
+                <a href="${link}" target="_blank" rel="noopener noreferrer" class="read-more">
+                    Leer nota <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        `;
+
+        newsContainer.appendChild(articleEl);
+    });
+
+    renderDiarioFilters(articlesData);
+    applyFilters();
+}
+
+function renderNewsError() {
+    const newsContainer = document.getElementById('news-container');
+    newsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color: #ef4444;">Error de red al cargar noticias.</p>';
+}
+
+if (typeof window !== 'undefined') {
+    window.renderArticles = renderArticles;
+    window.renderNewsError = renderNewsError;
+}
+
 function initApp() {
     document.getElementById('category-filters').addEventListener('click', (e) => {
         const btn = e.target.closest('.filter-btn');
@@ -116,80 +175,6 @@ function initApp() {
     });
 
     document.getElementById('search-input').addEventListener('input', applyFilters);
-
-    setTimeout(() => {
-        const newsContainer = document.getElementById('news-container');
-
-        if (typeof firebase !== 'undefined') {
-            if (typeof firebase.analytics === 'function') {
-                firebase.analytics();
-            }
-
-            const db = firebase.firestore();
-
-            db.collection('articulos')
-                .orderBy('Fecha_Publicacion', 'desc')
-                .get()
-                .then((querySnapshot) => {
-                    newsContainer.innerHTML = '';
-
-                    if (querySnapshot.empty) {
-                        newsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color: var(--text-secondary);">No hay noticias disponibles en este momento.</p>';
-                        return;
-                    }
-
-                    const articlesData = [];
-
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        articlesData.push(data);
-
-                        const articleEl = document.createElement('article');
-                        articleEl.className = 'news-card';
-
-                        const catClass = getCategoryClass(data.Categoria);
-                        articleEl.setAttribute('data-category', catClass.replace('cat-', ''));
-                        const titulo = data.Titulo || 'Sin título';
-                        const resumen = data.Resumen_IA || data.Resumen_Web || 'Sin resumen disponible.';
-                        const fuente = data.Diario || 'Fuente';
-                        const link = data.Link || '#';
-                        const categoriaTexto = data.Categoria || 'General';
-
-                        articleEl.setAttribute('data-diario', normalizeText(data.Diario));
-                        articleEl.setAttribute('data-diario-label', data.Diario || '');
-                        articleEl.setAttribute('data-search', normalizeText(`${titulo} ${resumen}`));
-
-                        articleEl.innerHTML = `
-                            <div class="card-header">
-                                <div class="badges-wrapper">
-                                    <span class="diario-badge">${fuente}</span>
-                                    <span class="category ${catClass}">${categoriaTexto}</span>
-                                </div>
-                                <span class="date">${formatTimeAgo(data.Fecha_Publicacion)}</span>
-                            </div>
-                            <h3 class="news-title">${titulo}</h3>
-                            <p class="news-summary">${resumen}</p>
-                            <div class="card-footer">
-                                <a href="${link}" target="_blank" rel="noopener noreferrer" class="read-more">
-                                    Leer nota <i class="fa-solid fa-arrow-right"></i>
-                                </a>
-                            </div>
-                        `;
-
-                        newsContainer.appendChild(articleEl);
-                    });
-
-                    renderDiarioFilters(articlesData);
-                    applyFilters();
-                })
-                .catch((error) => {
-                    console.error("Error obteniendo noticias:", error);
-                    newsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color: #ef4444;">Error de red al cargar noticias.</p>';
-                });
-        } else {
-            newsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color: var(--text-secondary);">La configuración de Firebase Hosting no ha cargado correctamente.</p>';
-        }
-    }, 300);
 }
 
 if (typeof document !== 'undefined') {
