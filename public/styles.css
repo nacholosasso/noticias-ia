@@ -216,6 +216,41 @@ main {
     font-weight: 500;
 }
 
+.read-toggle {
+    background: none;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s ease;
+}
+
+.read-toggle:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.news-card.read {
+    opacity: 0.55;
+    transition: opacity 0.3s ease;
+}
+
+.news-card.read:hover {
+    opacity: 1;
+}
+
+.news-card.read .read-toggle {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--bg-color);
+}
+
 .news-title {
     font-size: 1.25rem;
     font-weight: 700;
@@ -234,7 +269,7 @@ main {
 
 .card-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     padding-top: 1.2rem;
     border-top: 1px solid var(--border-color);

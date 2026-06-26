@@ -26,6 +26,30 @@ function normalizeText(str) {
     return str.toLowerCase().normalize('NFD').replace(/\p{Mn}/gu, '');
 }
 
+const READ_STORAGE_KEY = 'noticiasIA_leidas';
+
+function getReadLinks() {
+    try {
+        const raw = localStorage.getItem(READ_STORAGE_KEY);
+        return raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch {
+        return new Set();
+    }
+}
+
+function toggleReadLink(link) {
+    const readLinks = getReadLinks();
+    if (readLinks.has(link)) {
+        readLinks.delete(link);
+    } else {
+        readLinks.add(link);
+    }
+    try {
+        localStorage.setItem(READ_STORAGE_KEY, JSON.stringify([...readLinks]));
+    } catch {}
+    return readLinks.has(link);
+}
+
 function getCategoryClass(cat) {
     if (!cat) return 'cat-general';
 
@@ -60,8 +84,10 @@ function renderDiarioFilters(articlesData) {
 function applyFilters() {
     const activeCategoryBtn = document.querySelector('#category-filters .filter-btn.active');
     const activeDiarioBtn = document.querySelector('#diario-filters .filter-btn.active');
+    const activeReadBtn = document.querySelector('#read-filters .filter-btn.active');
     const activeCategoria = activeCategoryBtn ? activeCategoryBtn.getAttribute('data-filter') : 'all';
     const activeDiario = activeDiarioBtn ? activeDiarioBtn.getAttribute('data-diario-filter') : 'all';
+    const activeLectura = activeReadBtn ? activeReadBtn.getAttribute('data-read-filter') : 'all';
     const searchInput = document.getElementById('search-input');
     const searchTerm = searchInput ? normalizeText(searchInput.value.trim()) : '';
 
@@ -74,7 +100,9 @@ function applyFilters() {
         const matchCategoria = activeCategoria === 'all' || card.getAttribute('data-category') === activeCategoria;
         const matchDiario = activeDiario === 'all' || card.getAttribute('data-diario') === activeDiario;
         const matchBusqueda = searchTerm === '' || card.getAttribute('data-search').includes(searchTerm);
-        const visible = matchCategoria && matchDiario && matchBusqueda;
+        const isRead = card.getAttribute('data-read') === 'true';
+        const matchLectura = activeLectura === 'all' || (activeLectura === 'read' ? isRead : !isRead);
+        const visible = matchCategoria && matchDiario && matchBusqueda && matchLectura;
 
         card.classList.toggle('hidden', !visible);
         if (visible) visibleCount++;
@@ -107,9 +135,10 @@ function renderArticles(articlesData) {
         return;
     }
 
+    const readLinks = getReadLinks();
+
     articlesData.forEach((data) => {
         const articleEl = document.createElement('article');
-        articleEl.className = 'news-card';
 
         const catClass = getCategoryClass(data.Categoria);
         articleEl.setAttribute('data-category', catClass.replace('cat-', ''));
@@ -118,10 +147,14 @@ function renderArticles(articlesData) {
         const fuente = data.Diario || 'Fuente';
         const link = data.Link || '#';
         const categoriaTexto = data.Categoria || 'General';
+        const isRead = readLinks.has(link);
 
+        articleEl.className = `news-card${isRead ? ' read' : ''}`;
         articleEl.setAttribute('data-diario', normalizeText(data.Diario));
         articleEl.setAttribute('data-diario-label', data.Diario || '');
         articleEl.setAttribute('data-search', normalizeText(`${titulo} ${resumen}`));
+        articleEl.setAttribute('data-link', link);
+        articleEl.setAttribute('data-read', isRead ? 'true' : 'false');
 
         articleEl.innerHTML = `
             <div class="card-header">
@@ -134,6 +167,9 @@ function renderArticles(articlesData) {
             <h3 class="news-title">${titulo}</h3>
             <p class="news-summary">${resumen}</p>
             <div class="card-footer">
+                <button type="button" class="read-toggle" aria-pressed="${isRead}" title="${isRead ? 'Marcar como no leída' : 'Marcar como leída'}">
+                    <i class="fa-solid fa-check"></i> ${isRead ? 'Leída' : 'Marcar leída'}
+                </button>
                 <a href="${link}" target="_blank" rel="noopener noreferrer" class="read-more">
                     Leer nota <i class="fa-solid fa-arrow-right"></i>
                 </a>
@@ -174,7 +210,30 @@ function initApp() {
         applyFilters();
     });
 
+    document.getElementById('read-filters').addEventListener('click', (e) => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        document.querySelectorAll('#read-filters .filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        applyFilters();
+    });
+
     document.getElementById('search-input').addEventListener('input', applyFilters);
+
+    document.getElementById('news-container').addEventListener('click', (e) => {
+        const toggleBtn = e.target.closest('.read-toggle');
+        if (!toggleBtn) return;
+        const card = toggleBtn.closest('.news-card');
+        if (!card) return;
+
+        const isRead = toggleReadLink(card.getAttribute('data-link'));
+        card.classList.toggle('read', isRead);
+        card.setAttribute('data-read', isRead ? 'true' : 'false');
+        toggleBtn.setAttribute('aria-pressed', isRead ? 'true' : 'false');
+        toggleBtn.title = isRead ? 'Marcar como no leída' : 'Marcar como leída';
+        toggleBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isRead ? 'Leída' : 'Marcar leída'}`;
+        applyFilters();
+    });
 }
 
 if (typeof document !== 'undefined') {
