@@ -4,25 +4,27 @@ Un agregador y resumidor de noticias automatizado construido con Python, Firebas
 
 ## 🚀 Descripción del Proyecto
 
-Este proyecto consiste en un backend que recolecta periódicamente noticias de diferentes diarios argentinos (Olé, Caras y Ámbito) a través de sus feeds RSS. Utiliza web scraping para extraer el cuerpo de las noticias y la inteligencia artificial de **Google Gemini** para generar un resumen conciso (párrafo de entre 40 y 60 palabras) y clasificar cada artículo en una categoría (Deportes, Política, Economía, Espectáculos, Tecnología, Salud o Sociedad). 
+Este proyecto consiste en un backend que recolecta periódicamente noticias de diferentes diarios argentinos (Olé, Caras y Ámbito) a través de sus feeds RSS. Utiliza web scraping para extraer el cuerpo de las noticias y la inteligencia artificial de **Google Gemini** para generar un resumen conciso (un único párrafo de entre 100 y 120 palabras) y clasificar cada artículo en una categoría (Deportes, Política, Economía, Espectáculos, Tecnología, Salud o Sociedad). 
  
 La información procesada se almacena en una base de datos **Firestore** para ser consumida por un frontend alojado en **Firebase Hosting**.
 
 ## ✨ Características Principales
 
 - **Extracción Automática:** Lectura de feeds RSS y scraping del contenido de las noticias usando `feedparser` y `BeautifulSoup`.
-- **Inteligencia Artificial:** Resúmenes y categorización inteligente de texto usando la API de Google Gemini (integrando los últimos modelos de la familia Flash), con salida estructurada (JSON Schema) para garantizar categorías válidas.
+- **Inteligencia Artificial:** Resúmenes y categorización inteligente de texto usando la API de Google Gemini (integrando los últimos modelos de la familia Flash), con salida estructurada (JSON Schema) para garantizar categorías válidas y fallback automático entre modelos cuando uno agota su cuota.
 - **Gestión de Base de Datos:** Almacenamiento en Google Cloud Firestore con un sistema de limpieza automática que elimina las noticias con más de 24 horas de antigüedad.
 - **Control de RPM:** Manejo inteligente de tiempos de espera (`sleep`) para no exceder los límites de uso de la capa gratuita de las APIs.
 - **Despliegue en la Nube:** Configurado para ejecutarse periódicamente como un Job en **Google Cloud Run**.
-- **Frontend Interactivo:** Interfaz de usuario con filtros combinables por categoría y diario, además de una barra de búsqueda en tiempo real sobre los títulos y resúmenes de las noticias cargadas.
+- **Frontend Interactivo:** Interfaz de usuario con filtros combinables por categoría, diario y estado de lectura, además de una barra de búsqueda en tiempo real sobre los títulos y resúmenes de las noticias cargadas.
+- **Marcado de Leídas:** Cada noticia puede marcarse como leída (persistido en `localStorage`) y filtrarse por leídas / no leídas.
+- **Paginación:** Las noticias se cargan en lotes de 25 con un botón "Cargar más", usando cursores de Firestore (`startAfter`) para minimizar lecturas.
 
 ## 🛠️ Tecnologías Utilizadas
 
 - **Lenguaje:** Python 3
 - **IA:** Google GenAI SDK (familia de modelos Gemini Flash)
 - **Base de Datos:** Firebase / Google Cloud Firestore (`firebase-admin`)
-- **Frontend:** HTML5, CSS3, JavaScript (sin frameworks)
+- **Frontend:** HTML5, CSS3, JavaScript (sin frameworks, con el SDK modular de Firebase para leer Firestore)
 - **Web Scraping:** `BeautifulSoup4`, `requests`
 - **RSS:** `feedparser`
 - **Despliegue:** Google Cloud Run, Firebase Hosting
