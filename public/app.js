@@ -72,7 +72,11 @@ function getUniqueDiarios(articles) {
 
 function renderDiarioFilters(articlesData) {
     const diarioContainer = document.getElementById('diario-filters');
+    const existing = new Set(
+        [...diarioContainer.querySelectorAll('[data-diario-filter]')].map(b => b.getAttribute('data-diario-filter'))
+    );
     getUniqueDiarios(articlesData).forEach(({ value, label }) => {
+        if (existing.has(value)) return;
         const btn = document.createElement('button');
         btn.className = 'filter-btn';
         btn.setAttribute('data-diario-filter', value);
@@ -183,6 +187,56 @@ function renderArticles(articlesData) {
     applyFilters();
 }
 
+function appendArticles(articlesData) {
+    if (!articlesData || articlesData.length === 0) return;
+    const newsContainer = document.getElementById('news-container');
+    const readLinks = getReadLinks();
+
+    articlesData.forEach((data) => {
+        const articleEl = document.createElement('article');
+        const catClass = getCategoryClass(data.Categoria);
+        const titulo = data.Titulo || 'Sin título';
+        const resumen = data.Resumen_IA || data.Resumen_Web || 'Sin resumen disponible.';
+        const fuente = data.Diario || 'Fuente';
+        const link = data.Link || '#';
+        const categoriaTexto = data.Categoria || 'General';
+        const isRead = readLinks.has(link);
+
+        articleEl.className = `news-card${isRead ? ' read' : ''}`;
+        articleEl.setAttribute('data-category', catClass.replace('cat-', ''));
+        articleEl.setAttribute('data-diario', normalizeText(data.Diario));
+        articleEl.setAttribute('data-diario-label', data.Diario || '');
+        articleEl.setAttribute('data-search', normalizeText(`${titulo} ${resumen}`));
+        articleEl.setAttribute('data-link', link);
+        articleEl.setAttribute('data-read', isRead ? 'true' : 'false');
+
+        articleEl.innerHTML = `
+            <div class="card-header">
+                <div class="badges-wrapper">
+                    <span class="diario-badge">${fuente}</span>
+                    <span class="category ${catClass}">${categoriaTexto}</span>
+                </div>
+                <span class="date">${formatTimeAgo(data.Fecha_Publicacion)}</span>
+            </div>
+            <h3 class="news-title">${titulo}</h3>
+            <p class="news-summary">${resumen}</p>
+            <div class="card-footer">
+                <button type="button" class="read-toggle" aria-pressed="${isRead}" title="${isRead ? 'Marcar como no leída' : 'Marcar como leída'}">
+                    <i class="fa-solid fa-check"></i> ${isRead ? 'Leída' : 'Marcar leída'}
+                </button>
+                <a href="${link}" target="_blank" rel="noopener noreferrer" class="read-more">
+                    Leer nota <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
+        `;
+
+        newsContainer.appendChild(articleEl);
+    });
+
+    renderDiarioFilters(articlesData);
+    applyFilters();
+}
+
 function renderNewsError() {
     const newsContainer = document.getElementById('news-container');
     newsContainer.innerHTML = '<p style="grid-column: 1/-1; text-align:center; color: #ef4444;">Error de red al cargar noticias.</p>';
@@ -190,6 +244,7 @@ function renderNewsError() {
 
 if (typeof window !== 'undefined') {
     window.renderArticles = renderArticles;
+    window.appendArticles = appendArticles;
     window.renderNewsError = renderNewsError;
 }
 
@@ -219,6 +274,13 @@ function initApp() {
     });
 
     document.getElementById('search-input').addEventListener('input', applyFilters);
+
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            if (window.cargarMas) window.cargarMas();
+        });
+    }
 
     document.getElementById('news-container').addEventListener('click', (e) => {
         const toggleBtn = e.target.closest('.read-toggle');
