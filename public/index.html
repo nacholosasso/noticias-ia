@@ -29,6 +29,10 @@
 </head>
 <body>
 
+    <div id="gate-loading" class="gate-loading">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+    </div>
+
     <header>
         <div class="container header-content">
             <a href="#" class="logo" aria-label="Noticias IA">
@@ -53,7 +57,7 @@
         </div>
     </header>
 
-    <main class="container">
+    <main class="container" id="main-content" style="display:none">
         <section class="hero" id="noticias">
             <h1>La información resumida por IA</h1>
         </section>
@@ -194,39 +198,46 @@
         </div>
     </section>
 
-    <!-- Modal de login / registro -->
+    <!-- Modal de login / registro / verificación (no se puede cerrar: hay que iniciar sesión para ver las noticias) -->
     <div id="auth-modal" class="modal-overlay" style="display:none">
         <div class="modal-box">
-            <button type="button" id="auth-modal-close" class="modal-close" aria-label="Cerrar">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <div id="auth-view-login">
+                <div class="auth-tabs">
+                    <button type="button" class="auth-tab active" data-auth-tab="signin">Entrar</button>
+                    <button type="button" class="auth-tab" data-auth-tab="signup">Crear cuenta</button>
+                </div>
 
-            <div class="auth-tabs">
-                <button type="button" class="auth-tab active" data-auth-tab="signin">Entrar</button>
-                <button type="button" class="auth-tab" data-auth-tab="signup">Crear cuenta</button>
+                <button type="button" id="google-signin-btn" class="auth-btn auth-btn-google">
+                    <i class="fa-brands fa-google"></i> Continuar con Google
+                </button>
+
+                <div class="auth-divider"><span>o</span></div>
+
+                <form id="auth-form">
+                    <div class="form-group">
+                        <label for="auth-email">Email</label>
+                        <input type="email" id="auth-email" class="form-control" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="auth-password">Contraseña</label>
+                        <input type="password" id="auth-password" class="form-control" required autocomplete="current-password" minlength="6">
+                    </div>
+                    <p id="auth-error" class="auth-error" style="display:none"></p>
+                    <p id="auth-info" class="auth-info" style="display:none"></p>
+                    <button type="submit" id="auth-submit-btn" class="btn-submit">Entrar</button>
+                </form>
+
+                <button type="button" id="auth-forgot-btn" class="auth-link-btn">¿Olvidaste tu contraseña?</button>
             </div>
 
-            <button type="button" id="google-signin-btn" class="auth-btn auth-btn-google">
-                <i class="fa-brands fa-google"></i> Continuar con Google
-            </button>
-
-            <div class="auth-divider"><span>o</span></div>
-
-            <form id="auth-form">
-                <div class="form-group">
-                    <label for="auth-email">Email</label>
-                    <input type="email" id="auth-email" class="form-control" required autocomplete="email">
-                </div>
-                <div class="form-group">
-                    <label for="auth-password">Contraseña</label>
-                    <input type="password" id="auth-password" class="form-control" required autocomplete="current-password" minlength="6">
-                </div>
-                <p id="auth-error" class="auth-error" style="display:none"></p>
-                <p id="auth-info" class="auth-info" style="display:none"></p>
-                <button type="submit" id="auth-submit-btn" class="btn-submit">Entrar</button>
-            </form>
-
-            <button type="button" id="auth-forgot-btn" class="auth-link-btn">¿Olvidaste tu contraseña?</button>
+            <div id="auth-view-verify" style="display:none">
+                <p>Te enviamos un email de verificación a <strong id="verify-email-address"></strong>. Abrí el link que te mandamos para poder ver las noticias.</p>
+                <p id="verify-error" class="auth-error" style="display:none"></p>
+                <p id="verify-info" class="auth-info" style="display:none"></p>
+                <button type="button" id="check-verified-btn" class="btn-submit">Ya verifiqué, continuar</button>
+                <button type="button" id="resend-verification-btn" class="auth-btn">Reenviar email de verificación</button>
+                <button type="button" id="verify-logout-btn" class="auth-link-btn">Cerrar sesión / usar otra cuenta</button>
+            </div>
         </div>
     </div>
 

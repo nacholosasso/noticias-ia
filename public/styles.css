@@ -152,6 +152,18 @@ nav a:hover {
     padding: 0.4rem 0.6rem;
 }
 
+.gate-loading {
+    position: fixed;
+    inset: 0;
+    background-color: var(--bg-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 300;
+    font-size: 2rem;
+    color: var(--accent-color);
+}
+
 /* Modal de login / registro */
 .modal-overlay {
     position: fixed;
@@ -276,6 +288,18 @@ nav a:hover {
 
 #auth-form .form-group {
     margin-bottom: 1.1rem;
+}
+
+#auth-view-verify p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+#auth-view-verify .btn-submit,
+#auth-view-verify .auth-btn {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 0.8rem;
 }
 
 /* Sección Hero */

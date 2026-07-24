@@ -5,6 +5,7 @@ import {
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     sendPasswordResetEmail,
+    sendEmailVerification,
     signOut,
     onAuthStateChanged,
 } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
@@ -26,6 +27,33 @@ function mensajeError(err) {
     if (err.code in ERRORES_AUTH) return ERRORES_AUTH[err.code];
     return 'Ocurrió un error. Intentá de nuevo.';
 }
+
+function usuarioTieneAcceso(user) {
+    return !!user && !!user.emailVerified;
+}
+
+function crearMensajero(errorEl, infoEl) {
+    return {
+        limpiar() {
+            errorEl.style.display = 'none';
+            errorEl.textContent = '';
+            infoEl.style.display = 'none';
+            infoEl.textContent = '';
+        },
+        mostrarError(texto) {
+            if (!texto) return;
+            errorEl.textContent = texto;
+            errorEl.style.display = 'block';
+        },
+        mostrarInfo(texto) {
+            infoEl.textContent = texto;
+            infoEl.style.display = 'block';
+        },
+    };
+}
+
+// Asignada dentro de initAuthModal; onAuthStateChanged la llama en cada cambio de estado de auth.
+let actualizarAcceso = () => {};
 
 async function subirLinksLocales(db, uid, links) {
     await Promise.all(links.map((link) =>
@@ -66,6 +94,11 @@ function mostrarUsuario(user) {
 
 function initAuthModal(auth) {
     const modal = document.getElementById('auth-modal');
+    const gateLoadingEl = document.getElementById('gate-loading');
+    const mainEl = document.getElementById('main-content');
+    const viewLogin = document.getElementById('auth-view-login');
+    const viewVerify = document.getElementById('auth-view-verify');
+
     const form = document.getElementById('auth-form');
     const emailInput = document.getElementById('auth-email');
     const passwordInput = document.getElementById('auth-password');
@@ -74,50 +107,74 @@ function initAuthModal(auth) {
     const infoEl = document.getElementById('auth-info');
     const tabs = document.querySelectorAll('.auth-tab');
     let modo = 'signin';
+    const msgLogin = crearMensajero(errorEl, infoEl);
 
-    function limpiarMensajes() {
-        errorEl.style.display = 'none';
-        errorEl.textContent = '';
-        infoEl.style.display = 'none';
-        infoEl.textContent = '';
-    }
+    const verifyEmailSpan = document.getElementById('verify-email-address');
+    const verifyErrorEl = document.getElementById('verify-error');
+    const verifyInfoEl = document.getElementById('verify-info');
+    const resendBtn = document.getElementById('resend-verification-btn');
+    const checkVerifiedBtn = document.getElementById('check-verified-btn');
+    const verifyLogoutBtn = document.getElementById('verify-logout-btn');
+    const msgVerify = crearMensajero(verifyErrorEl, verifyInfoEl);
 
-    function mostrarError(texto) {
-        if (!texto) return;
-        errorEl.textContent = texto;
-        errorEl.style.display = 'block';
-    }
+    let yaSeCargaronNoticias = false;
 
-    function mostrarInfo(texto) {
-        infoEl.textContent = texto;
-        infoEl.style.display = 'block';
-    }
-
-    function abrirModal() {
+    function mostrarVistaLogin() {
+        gateLoadingEl.style.display = 'none';
         modal.style.display = 'flex';
-        limpiarMensajes();
-        emailInput.focus();
+        viewLogin.style.display = 'block';
+        viewVerify.style.display = 'none';
+        msgLogin.limpiar();
     }
 
-    function cerrarModal() {
+    function mostrarVistaVerificar(user) {
+        gateLoadingEl.style.display = 'none';
+        modal.style.display = 'flex';
+        viewLogin.style.display = 'none';
+        viewVerify.style.display = 'block';
+        verifyEmailSpan.textContent = user.email || '';
+        msgVerify.limpiar();
+    }
+
+    function concederAcceso() {
+        gateLoadingEl.style.display = 'none';
         modal.style.display = 'none';
         form.reset();
-        limpiarMensajes();
+        msgLogin.limpiar();
+        msgVerify.limpiar();
+        mainEl.style.display = '';
+        if (!yaSeCargaronNoticias) {
+            yaSeCargaronNoticias = true;
+            if (typeof window.iniciarNoticias === 'function') window.iniciarNoticias();
+        }
     }
+
+    actualizarAcceso = function actualizarAccesoImpl(user) {
+        if (usuarioTieneAcceso(user)) {
+            concederAcceso();
+            return;
+        }
+        if (user) {
+            user.reload()
+                .then(() => {
+                    if (user.emailVerified) {
+                        return user.getIdToken(true).then(() => actualizarAccesoImpl(auth.currentUser));
+                    }
+                    mostrarVistaVerificar(user);
+                })
+                .catch(() => mostrarVistaVerificar(user));
+            return;
+        }
+        mostrarVistaLogin();
+    };
 
     function cambiarModo(nuevoModo) {
         modo = nuevoModo;
         tabs.forEach((tab) => tab.classList.toggle('active', tab.getAttribute('data-auth-tab') === modo));
         submitBtn.textContent = modo === 'signup' ? 'Crear cuenta' : 'Entrar';
         passwordInput.autocomplete = modo === 'signup' ? 'new-password' : 'current-password';
-        limpiarMensajes();
+        msgLogin.limpiar();
     }
-
-    document.getElementById('login-btn').addEventListener('click', abrirModal);
-    document.getElementById('auth-modal-close').addEventListener('click', cerrarModal);
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) cerrarModal();
-    });
 
     tabs.forEach((tab) => {
         tab.addEventListener('click', () => cambiarModo(tab.getAttribute('data-auth-tab')));
@@ -125,13 +182,12 @@ function initAuthModal(auth) {
 
     document.getElementById('google-signin-btn').addEventListener('click', () => {
         signInWithPopup(auth, new GoogleAuthProvider())
-            .then(cerrarModal)
-            .catch((err) => mostrarError(mensajeError(err)));
+            .catch((err) => msgLogin.mostrarError(mensajeError(err)));
     });
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        limpiarMensajes();
+        msgLogin.limpiar();
         const email = emailInput.value.trim();
         const password = passwordInput.value;
         const accion = modo === 'signup'
@@ -140,21 +196,62 @@ function initAuthModal(auth) {
 
         submitBtn.disabled = true;
         accion
-            .then(cerrarModal)
-            .catch((err) => mostrarError(mensajeError(err)))
+            .then((cred) => {
+                if (modo === 'signup' && cred.user) {
+                    return sendEmailVerification(cred.user).catch((err) => {
+                        console.error('No se pudo enviar el email de verificación:', err);
+                    });
+                }
+            })
+            .catch((err) => msgLogin.mostrarError(mensajeError(err)))
             .finally(() => { submitBtn.disabled = false; });
     });
 
     document.getElementById('auth-forgot-btn').addEventListener('click', () => {
-        limpiarMensajes();
+        msgLogin.limpiar();
         const email = emailInput.value.trim();
         if (!email) {
-            mostrarError('Escribí tu email arriba para poder enviarte el link de recuperación.');
+            msgLogin.mostrarError('Escribí tu email arriba para poder enviarte el link de recuperación.');
             return;
         }
         sendPasswordResetEmail(auth, email)
-            .then(() => mostrarInfo('Te enviamos un email para restablecer tu contraseña.'))
-            .catch((err) => mostrarError(mensajeError(err)));
+            .then(() => msgLogin.mostrarInfo('Te enviamos un email para restablecer tu contraseña.'))
+            .catch((err) => msgLogin.mostrarError(mensajeError(err)));
+    });
+
+    resendBtn.addEventListener('click', () => {
+        const user = auth.currentUser;
+        if (!user) return;
+        msgVerify.limpiar();
+        resendBtn.disabled = true;
+        sendEmailVerification(user)
+            .then(() => msgVerify.mostrarInfo('Te reenviamos el email de verificación. Revisá tu bandeja de entrada (y spam).'))
+            .catch((err) => msgVerify.mostrarError(mensajeError(err) || 'No pudimos reenviar el email, esperá un minuto e intentá de nuevo.'))
+            .finally(() => { setTimeout(() => { resendBtn.disabled = false; }, 30000); });
+    });
+
+    checkVerifiedBtn.addEventListener('click', () => {
+        const user = auth.currentUser;
+        if (!user) return;
+        msgVerify.limpiar();
+        checkVerifiedBtn.disabled = true;
+        user.reload()
+            .then(() => user.getIdToken(true))
+            .then(() => {
+                checkVerifiedBtn.disabled = false;
+                actualizarAcceso(auth.currentUser);
+                if (!auth.currentUser.emailVerified) {
+                    msgVerify.mostrarError('Todavía no detectamos la verificación. Revisá tu email y probá de nuevo en unos segundos.');
+                }
+            })
+            .catch((err) => {
+                checkVerifiedBtn.disabled = false;
+                msgVerify.mostrarError(mensajeError(err) || 'No pudimos comprobar el estado, intentá de nuevo.');
+            });
+    });
+
+    verifyLogoutBtn.addEventListener('click', () => {
+        signOut(auth).catch((err) => console.error('Logout falló:', err));
     });
 }
 
@@ -181,7 +278,8 @@ async function initAuth() {
 
     onAuthStateChanged(auth, (user) => {
         mostrarUsuario(user);
-        if (user) {
+        actualizarAcceso(user);
+        if (usuarioTieneAcceso(user)) {
             sincronizarLeidos(db, user.uid).catch((err) => {
                 console.error('Error sincronizando noticias leídas:', err);
             });

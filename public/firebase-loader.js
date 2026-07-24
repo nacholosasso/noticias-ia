@@ -83,4 +83,4 @@ async function cargarMas() {
 }
 
 window.cargarMas = cargarMas;
-cargarNoticias();
+window.iniciarNoticias = cargarNoticias;
