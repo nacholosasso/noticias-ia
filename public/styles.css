@@ -773,6 +773,13 @@ footer {
     padding: 2rem 0 3rem;
 }
 
+.load-more-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+}
+
 .btn-load-more {
     display: inline-flex;
     align-items: center;
@@ -797,6 +804,12 @@ footer {
 .btn-load-more:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.btn-load-all {
+    background-color: transparent;
+    color: var(--text-secondary);
+    border-style: dashed;
 }
 
 .no-more-msg {

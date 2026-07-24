@@ -316,6 +316,13 @@ function initApp() {
         });
     }
 
+    const loadAllBtn = document.getElementById('load-all-btn');
+    if (loadAllBtn) {
+        loadAllBtn.addEventListener('click', () => {
+            if (window.cargarTodas) window.cargarTodas();
+        });
+    }
+
     document.getElementById('news-container').addEventListener('click', (e) => {
         const toggleBtn = e.target.closest('.read-toggle');
         if (!toggleBtn) return;
