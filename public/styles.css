@@ -110,6 +110,36 @@ nav a:hover {
     margin-left: 1.5rem;
 }
 
+.category-bar {
+    margin-top: 1rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--border-color);
+    overflow-x: auto;
+    scrollbar-width: thin;
+}
+
+.category-bar::-webkit-scrollbar {
+    height: 4px;
+}
+
+.category-bar::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: 4px;
+}
+
+.category-bar .filters-container {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    margin-bottom: 0;
+    width: max-content;
+    min-width: 100%;
+}
+
+.category-bar .filter-btn {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
 .icon-toggle-btn {
     background-color: var(--surface-color);
     color: var(--text-secondary);
@@ -342,9 +372,10 @@ main {
 }
 
 .news-card {
+    --diario-color-rgb: 245, 185, 66;
     background-color: var(--surface-color);
     border: 1px solid var(--border-color);
-    border-left: 3px solid var(--border-color);
+    border-left: 3px solid rgb(var(--diario-color-rgb));
     border-radius: 16px;
     padding: 1.75rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
@@ -356,8 +387,8 @@ main {
 
 .news-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
-    border-color: var(--accent-color);
+    border-color: rgb(var(--diario-color-rgb));
+    box-shadow: 0 12px 30px rgba(var(--diario-color-rgb), 0.25);
 }
 
 @keyframes card-in {
@@ -373,8 +404,8 @@ main {
 }
 
 .diario-badge {
-    background-color: rgba(248, 250, 252, 0.1);
-    color: var(--text-primary);
+    background-color: rgba(var(--diario-color-rgb), 0.15);
+    color: rgb(var(--diario-color-rgb));
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
     font-size: 0.75rem;
@@ -448,6 +479,17 @@ main {
     border-top: 1px solid var(--border-color);
 }
 
+.category {
+    background-color: rgba(248, 250, 252, 0.1);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .badges-wrapper {
     display: flex;
     gap: 0.5rem;
@@ -470,7 +512,7 @@ main {
     color: var(--accent-hover);
 }
 
-/* Filtros de la barra lateral */
+/* Filtros de Categorías */
 .filters-container {
     display: flex;
     flex-wrap: wrap;
@@ -830,7 +872,7 @@ footer {
 
 .sidebar {
     position: sticky;
-    top: 6rem;
+    top: 9rem;
     align-self: start;
     display: flex;
     flex-direction: column;
@@ -907,7 +949,7 @@ footer {
 /* Panel lateral derecho: usuarios en línea + chat */
 .sidebar-right {
     position: sticky;
-    top: 6rem;
+    top: 9rem;
     align-self: start;
     display: flex;
     flex-direction: column;

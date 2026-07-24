@@ -1,6 +1,26 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { formatTimeAgo, normalizeText, getUniqueDiarios, mergeReadLinks } = require('./app.js');
+const { formatTimeAgo, getCategoryClass, normalizeText, getUniqueDiarios, mergeReadLinks, getDiarioColorRgb } = require('./app.js');
+
+test('getCategoryClass normaliza tildes y mayúsculas', () => {
+    assert.equal(getCategoryClass('Política'), 'cat-politica');
+    assert.equal(getCategoryClass('ECONOMIA'), 'cat-economia');
+});
+
+test('getCategoryClass devuelve cat-general para categorías desconocidas o vacías', () => {
+    assert.equal(getCategoryClass('Clima'), 'cat-general');
+    assert.equal(getCategoryClass(null), 'cat-general');
+    assert.equal(getCategoryClass(undefined), 'cat-general');
+});
+
+test('getDiarioColorRgb devuelve el color de marca conocido para diarios mapeados', () => {
+    assert.equal(getDiarioColorRgb('Olé'), '227, 6, 19');
+    assert.equal(getDiarioColorRgb('AMBITO'), '0, 149, 76');
+});
+
+test('getDiarioColorRgb es determinístico para diarios desconocidos', () => {
+    assert.equal(getDiarioColorRgb('Un Diario Nuevo'), getDiarioColorRgb('un diario nuevo'));
+});
 
 test('formatTimeAgo muestra minutos para diferencias menores a una hora', () => {
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
