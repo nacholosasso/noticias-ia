@@ -880,8 +880,8 @@ footer {
     align-self: start;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    padding: 4rem 0;
+    gap: 1.25rem;
+    padding: 1.5rem 0 2rem;
 }
 
 .sidebar-close-btn {
@@ -901,7 +901,9 @@ footer {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        align-self: flex-end;
+        position: absolute;
+        top: 1.5rem;
+        right: 0;
         width: 30px;
         height: 30px;
         background-color: var(--surface-color);
