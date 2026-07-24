@@ -377,34 +377,44 @@ const CHAT_HIDDEN_KEY = 'noticiasIA_ocultarChat';
 
 function initLayoutToggles() {
     const layoutWrapper = document.querySelector('.layout-wrapper');
-    const filtersBtn = document.getElementById('filters-toggle-btn');
+    const collapseBtn = document.getElementById('sidebar-collapse-btn');
+    const reopenBtn = document.getElementById('sidebar-reopen-btn');
     const chatBtn = document.getElementById('chat-toggle-btn');
-    if (!layoutWrapper || !filtersBtn || !chatBtn) return;
+    if (!layoutWrapper) return;
 
-    const setup = (btn, storageKey, hideClass, labels) => {
-        const applyState = (hidden) => {
-            layoutWrapper.classList.toggle(hideClass, hidden);
-            btn.setAttribute('aria-pressed', hidden ? 'false' : 'true');
-            btn.title = hidden ? labels.show : labels.hide;
+    if (collapseBtn && reopenBtn) {
+        const applyFiltersState = (hidden) => {
+            layoutWrapper.classList.toggle('hide-left-sidebar', hidden);
+            reopenBtn.style.display = hidden ? 'inline-flex' : 'none';
         };
 
-        applyState(localStorage.getItem(storageKey) === 'true');
+        applyFiltersState(localStorage.getItem(FILTERS_HIDDEN_KEY) === 'true');
 
-        btn.addEventListener('click', () => {
-            const hidden = !layoutWrapper.classList.contains(hideClass);
-            localStorage.setItem(storageKey, String(hidden));
+        collapseBtn.addEventListener('click', () => {
+            localStorage.setItem(FILTERS_HIDDEN_KEY, 'true');
+            applyFiltersState(true);
+        });
+        reopenBtn.addEventListener('click', () => {
+            localStorage.setItem(FILTERS_HIDDEN_KEY, 'false');
+            applyFiltersState(false);
+        });
+    }
+
+    if (chatBtn) {
+        const applyState = (hidden) => {
+            layoutWrapper.classList.toggle('hide-right-sidebar', hidden);
+            chatBtn.setAttribute('aria-pressed', hidden ? 'false' : 'true');
+            chatBtn.title = hidden ? 'Mostrar chat' : 'Ocultar chat';
+        };
+
+        applyState(localStorage.getItem(CHAT_HIDDEN_KEY) === 'true');
+
+        chatBtn.addEventListener('click', () => {
+            const hidden = !layoutWrapper.classList.contains('hide-right-sidebar');
+            localStorage.setItem(CHAT_HIDDEN_KEY, String(hidden));
             applyState(hidden);
         });
-    };
-
-    setup(filtersBtn, FILTERS_HIDDEN_KEY, 'hide-left-sidebar', {
-        hide: 'Ocultar menú de filtros',
-        show: 'Mostrar menú de filtros',
-    });
-    setup(chatBtn, CHAT_HIDDEN_KEY, 'hide-right-sidebar', {
-        hide: 'Ocultar chat',
-        show: 'Mostrar chat',
-    });
+    }
 }
 
 if (typeof document !== 'undefined') {

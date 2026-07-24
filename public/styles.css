@@ -878,8 +878,6 @@ footer {
     position: sticky;
     top: 6rem;
     align-self: start;
-    max-height: calc(100vh - 7rem);
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -888,6 +886,37 @@ footer {
 
 .sidebar-close-btn {
     display: none;
+}
+
+.sidebar-collapse-btn {
+    display: none;
+}
+
+.sidebar-reopen-btn {
+    display: none;
+}
+
+@media (min-width: 901px) {
+    .sidebar-collapse-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        align-self: flex-end;
+        width: 30px;
+        height: 30px;
+        background-color: var(--surface-color);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.85rem;
+        transition: border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .sidebar-collapse-btn:hover {
+        border-color: var(--accent-color);
+        color: var(--accent-color);
+    }
 }
 
 .sidebar-overlay {
@@ -1103,6 +1132,10 @@ footer {
 
     .layout-toggle-group {
         display: none;
+    }
+
+    .sidebar-reopen-btn {
+        display: none !important;
     }
 
     .sidebar {

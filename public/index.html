@@ -39,6 +39,9 @@
                 <button type="button" id="sidebar-toggle-btn" class="hamburger-btn" aria-label="Abrir menú de filtros" aria-expanded="false" aria-controls="sidebar">
                     <i class="fa-solid fa-bars"></i>
                 </button>
+                <button type="button" id="sidebar-reopen-btn" class="icon-toggle-btn sidebar-reopen-btn" aria-controls="sidebar" title="Mostrar menú de filtros">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
                 <a href="#" class="logo" aria-label="InfoIA">
                     Info<span>IA</span>
                 </a>
@@ -46,9 +49,6 @@
             <nav>
                 <a href="#contacto">Contacto</a>
                 <div class="layout-toggle-group">
-                    <button type="button" id="filters-toggle-btn" class="icon-toggle-btn" aria-pressed="true" aria-controls="sidebar" title="Ocultar menú de filtros">
-                        <i class="fa-solid fa-sliders"></i>
-                    </button>
                     <button type="button" id="chat-toggle-btn" class="icon-toggle-btn" aria-pressed="true" aria-controls="sidebar-right" title="Ocultar chat">
                         <i class="fa-solid fa-comments"></i>
                     </button>
@@ -74,6 +74,9 @@
     <aside class="sidebar" id="sidebar" aria-label="Filtros de noticias">
         <button type="button" id="sidebar-close-btn" class="sidebar-close-btn" aria-label="Cerrar menú de filtros">
             <i class="fa-solid fa-xmark"></i>
+        </button>
+        <button type="button" id="sidebar-collapse-btn" class="sidebar-collapse-btn" aria-controls="sidebar" title="Ocultar menú de filtros">
+            <i class="fa-solid fa-angles-left"></i>
         </button>
 
         <div class="sidebar-section">
