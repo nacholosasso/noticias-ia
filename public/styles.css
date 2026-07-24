@@ -53,7 +53,7 @@ body {
 
 /* Navbar */
 header {
-    background-color: rgba(30, 41, 59, 0.85);
+    background-color: rgba(10, 14, 22, 0.85);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border-color);
@@ -87,18 +87,6 @@ header {
 
 .logo span {
     color: var(--accent-color);
-}
-
-.header-tagline {
-    flex: 1;
-    text-align: center;
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    padding: 0 1.5rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 nav {
@@ -583,7 +571,7 @@ main {
 
 /* Sección de Contacto */
 .contact-section {
-    background-color: var(--surface-color);
+    background-color: var(--bg-color);
     border-top: 1px solid var(--border-color);
     padding: 5rem 0;
 }
@@ -613,7 +601,7 @@ main {
     align-items: center;
     gap: 1rem;
     padding: 1rem 1.5rem;
-    background-color: var(--bg-color);
+    background-color: var(--surface-color);
     border: 1px solid var(--border-color);
     border-radius: 12px;
     color: var(--text-primary);
@@ -636,7 +624,7 @@ main {
 
 /* Formulario Formspree */
 .contact-form {
-    background-color: var(--bg-color);
+    background-color: var(--surface-color);
     padding: 2.5rem;
     border-radius: 16px;
     border: 1px solid var(--border-color);
@@ -658,7 +646,7 @@ main {
 .form-control {
     width: 100%;
     padding: 0.85rem 1rem;
-    background-color: var(--surface-color);
+    background-color: var(--bg-color);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     color: var(--text-primary);
@@ -1098,10 +1086,6 @@ footer {
 
     .hamburger-btn {
         display: inline-flex;
-    }
-
-    .header-tagline {
-        display: none;
     }
 
     .layout-toggle-group {
