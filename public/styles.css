@@ -852,6 +852,10 @@ footer {
     align-items: start;
 }
 
+.layout-wrapper.hide-right-sidebar .sidebar-right {
+    display: none;
+}
+
 @media (min-width: 901px) {
     .layout-wrapper.hide-left-sidebar {
         grid-template-columns: 1fr 280px;
@@ -861,9 +865,6 @@ footer {
     }
     .layout-wrapper.hide-right-sidebar {
         grid-template-columns: 240px 1fr;
-    }
-    .layout-wrapper.hide-right-sidebar .sidebar-right {
-        display: none;
     }
     .layout-wrapper.hide-left-sidebar.hide-right-sidebar {
         grid-template-columns: 1fr;
@@ -1121,15 +1122,14 @@ footer {
     }
 
     .sidebar-right {
-        display: none;
+        position: static;
+        padding: 2rem 0 0;
+        margin-top: 1.5rem;
+        border-top: 1px solid var(--border-color);
     }
 
     .hamburger-btn {
         display: inline-flex;
-    }
-
-    .layout-toggle-group {
-        display: none;
     }
 
     .sidebar-reopen-btn {
