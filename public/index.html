@@ -35,9 +35,14 @@
 
     <header>
         <div class="container header-content">
-            <a href="#" class="logo" aria-label="Noticias IA">
-                <i class="fa-solid fa-robot" style="color: var(--accent-color);"></i>
-            </a>
+            <div class="header-left">
+                <button type="button" id="sidebar-toggle-btn" class="hamburger-btn" aria-label="Abrir menú de filtros" aria-expanded="false" aria-controls="sidebar">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <a href="#" class="logo" aria-label="Noticias IA">
+                    <i class="fa-solid fa-robot" style="color: var(--accent-color);"></i>
+                </a>
+            </div>
             <nav>
                 <a href="#noticias">Noticias</a>
                 <a href="#contacto">Contacto</a>
@@ -57,7 +62,51 @@
         </div>
     </header>
 
-    <main class="container" id="main-content" style="display:none">
+    <div class="layout-wrapper container">
+
+    <aside class="sidebar" id="sidebar" aria-label="Filtros de noticias">
+        <button type="button" id="sidebar-close-btn" class="sidebar-close-btn" aria-label="Cerrar menú de filtros">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="sidebar-section">
+            <h2 class="sidebar-title"><i class="fa-solid fa-layer-group"></i> Categoría</h2>
+            <!-- Filtros de categoría -->
+            <div class="filters-container" id="category-filters">
+                <button class="filter-btn active" data-filter="all"><i class="fa-solid fa-layer-group"></i> Todas</button>
+                <button class="filter-btn" data-filter="politica"><i class="fa-solid fa-landmark"></i> Política</button>
+                <button class="filter-btn" data-filter="economia"><i class="fa-solid fa-chart-line"></i> Economía</button>
+                <button class="filter-btn" data-filter="deportes"><i class="fa-solid fa-futbol"></i> Deportes</button>
+                <button class="filter-btn" data-filter="espectaculos"><i class="fa-solid fa-star"></i> Espectáculos</button>
+                <button class="filter-btn" data-filter="tecnologia"><i class="fa-solid fa-microchip"></i> Tecnología</button>
+                <button class="filter-btn" data-filter="salud"><i class="fa-solid fa-heart-pulse"></i> Salud</button>
+                <button class="filter-btn" data-filter="sociedad"><i class="fa-solid fa-people-group"></i> Sociedad</button>
+                <button class="filter-btn" data-filter="general"><i class="fa-solid fa-newspaper"></i> General</button>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h2 class="sidebar-title"><i class="fa-solid fa-newspaper"></i> Diario</h2>
+            <!-- Filtro por diario (se completa dinámicamente según las noticias cargadas) -->
+            <div class="filters-container" id="diario-filters">
+                <button class="filter-btn active" data-diario-filter="all"><i class="fa-solid fa-newspaper"></i> Todos los diarios</button>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <h2 class="sidebar-title"><i class="fa-regular fa-circle-check"></i> Lectura</h2>
+            <!-- Filtro por estado de lectura -->
+            <div class="filters-container" id="read-filters">
+                <button class="filter-btn" data-read-filter="all"><i class="fa-solid fa-layer-group"></i> Todas</button>
+                <button class="filter-btn active" data-read-filter="unread"><i class="fa-regular fa-circle"></i> No leídas</button>
+                <button class="filter-btn" data-read-filter="read"><i class="fa-solid fa-check"></i> Leídas</button>
+            </div>
+        </div>
+    </aside>
+
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <main id="main-content" style="display:none">
         <section class="hero" id="noticias">
             <h1>La información resumida por IA</h1>
         </section>
@@ -68,31 +117,6 @@
         <div class="search-container">
             <i class="fa-solid fa-magnifying-glass search-icon"></i>
             <input type="text" id="search-input" class="search-input" placeholder="Buscar por palabra, nombre o lugar...">
-        </div>
-
-        <!-- Filtros de categoría -->
-        <div class="filters-container" id="category-filters">
-            <button class="filter-btn active" data-filter="all"><i class="fa-solid fa-layer-group"></i> Todas</button>
-            <button class="filter-btn" data-filter="politica"><i class="fa-solid fa-landmark"></i> Política</button>
-            <button class="filter-btn" data-filter="economia"><i class="fa-solid fa-chart-line"></i> Economía</button>
-            <button class="filter-btn" data-filter="deportes"><i class="fa-solid fa-futbol"></i> Deportes</button>
-            <button class="filter-btn" data-filter="espectaculos"><i class="fa-solid fa-star"></i> Espectáculos</button>
-            <button class="filter-btn" data-filter="tecnologia"><i class="fa-solid fa-microchip"></i> Tecnología</button>
-            <button class="filter-btn" data-filter="salud"><i class="fa-solid fa-heart-pulse"></i> Salud</button>
-            <button class="filter-btn" data-filter="sociedad"><i class="fa-solid fa-people-group"></i> Sociedad</button>
-            <button class="filter-btn" data-filter="general"><i class="fa-solid fa-newspaper"></i> General</button>
-        </div>
-
-        <!-- Filtro por diario (se completa dinámicamente según las noticias cargadas) -->
-        <div class="filters-container" id="diario-filters">
-            <button class="filter-btn active" data-diario-filter="all"><i class="fa-solid fa-newspaper"></i> Todos los diarios</button>
-        </div>
-
-        <!-- Filtro por estado de lectura -->
-        <div class="filters-container" id="read-filters">
-            <button class="filter-btn" data-read-filter="all"><i class="fa-solid fa-layer-group"></i> Todas</button>
-            <button class="filter-btn active" data-read-filter="unread"><i class="fa-regular fa-circle"></i> No leídas</button>
-            <button class="filter-btn" data-read-filter="read"><i class="fa-solid fa-check"></i> Leídas</button>
         </div>
 
         <!-- Contenedor de Noticias -->
@@ -151,6 +175,8 @@
             <p id="no-more-msg" class="no-more-msg" style="display:none">Ya viste todas las noticias disponibles.</p>
         </div>
     </main>
+
+    </div>
 
     <!-- Sección de Contacto -->
     <section class="contact-section" id="contacto">

@@ -330,6 +330,38 @@ function initApp() {
         toggleBtn.innerHTML = `<i class="fa-solid fa-check"></i> ${isRead ? 'Leída' : 'Marcar leída'}`;
         applyFilters();
     });
+
+    initSidebarToggle();
+}
+
+function initSidebarToggle() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const toggleBtn = document.getElementById('sidebar-toggle-btn');
+    const closeBtn = document.getElementById('sidebar-close-btn');
+    if (!sidebar || !overlay || !toggleBtn || !closeBtn) return;
+
+    const openSidebar = () => {
+        sidebar.classList.add('open');
+        overlay.classList.add('visible');
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        closeBtn.focus();
+    };
+    const closeSidebar = () => {
+        sidebar.classList.remove('open');
+        overlay.classList.remove('visible');
+        toggleBtn.setAttribute('aria-expanded', 'false');
+        toggleBtn.focus();
+    };
+
+    toggleBtn.addEventListener('click', () => {
+        sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
+    });
+    overlay.addEventListener('click', closeSidebar);
+    closeBtn.addEventListener('click', closeSidebar);
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
+    });
 }
 
 if (typeof document !== 'undefined') {
