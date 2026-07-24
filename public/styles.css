@@ -64,7 +64,7 @@ header {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 0 1.5rem;
 }
@@ -337,7 +337,7 @@ main {
 /* Grilla de Noticias */
 .news-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 2rem;
     margin-bottom: 4rem;
 }
@@ -836,8 +836,8 @@ footer {
 
 .layout-wrapper {
     display: grid;
-    grid-template-columns: 260px 1fr;
-    gap: 2.5rem;
+    grid-template-columns: 240px 1fr;
+    gap: 2rem;
     align-items: start;
 }
 
