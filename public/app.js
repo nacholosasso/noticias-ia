@@ -332,6 +332,7 @@ function initApp() {
     });
 
     initSidebarToggle();
+    initLayoutToggles();
 }
 
 function initSidebarToggle() {
@@ -361,6 +362,41 @@ function initSidebarToggle() {
     closeBtn.addEventListener('click', closeSidebar);
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
+    });
+}
+
+const FILTERS_HIDDEN_KEY = 'noticiasIA_ocultarFiltros';
+const CHAT_HIDDEN_KEY = 'noticiasIA_ocultarChat';
+
+function initLayoutToggles() {
+    const layoutWrapper = document.querySelector('.layout-wrapper');
+    const filtersBtn = document.getElementById('filters-toggle-btn');
+    const chatBtn = document.getElementById('chat-toggle-btn');
+    if (!layoutWrapper || !filtersBtn || !chatBtn) return;
+
+    const setup = (btn, storageKey, hideClass, labels) => {
+        const applyState = (hidden) => {
+            layoutWrapper.classList.toggle(hideClass, hidden);
+            btn.setAttribute('aria-pressed', hidden ? 'false' : 'true');
+            btn.title = hidden ? labels.show : labels.hide;
+        };
+
+        applyState(localStorage.getItem(storageKey) === 'true');
+
+        btn.addEventListener('click', () => {
+            const hidden = !layoutWrapper.classList.contains(hideClass);
+            localStorage.setItem(storageKey, String(hidden));
+            applyState(hidden);
+        });
+    };
+
+    setup(filtersBtn, FILTERS_HIDDEN_KEY, 'hide-left-sidebar', {
+        hide: 'Ocultar menú de filtros',
+        show: 'Mostrar menú de filtros',
+    });
+    setup(chatBtn, CHAT_HIDDEN_KEY, 'hide-right-sidebar', {
+        hide: 'Ocultar chat',
+        show: 'Mostrar chat',
     });
 }
 

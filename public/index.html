@@ -40,12 +40,21 @@
                     <i class="fa-solid fa-bars"></i>
                 </button>
                 <a href="#" class="logo" aria-label="Noticias IA">
-                    <i class="fa-solid fa-robot" style="color: var(--accent-color);"></i>
+                    Noticias <span>IA</span>
                 </a>
             </div>
+            <h1 class="header-tagline">La información resumida por IA</h1>
             <nav>
                 <a href="#noticias">Noticias</a>
                 <a href="#contacto">Contacto</a>
+                <div class="layout-toggle-group">
+                    <button type="button" id="filters-toggle-btn" class="icon-toggle-btn" aria-pressed="true" aria-controls="sidebar" title="Ocultar menú de filtros">
+                        <i class="fa-solid fa-sliders"></i>
+                    </button>
+                    <button type="button" id="chat-toggle-btn" class="icon-toggle-btn" aria-pressed="true" aria-controls="sidebar-right" title="Ocultar chat">
+                        <i class="fa-solid fa-comments"></i>
+                    </button>
+                </div>
                 <div id="auth-container">
                     <button id="login-btn" class="auth-btn" style="display:none">
                         <i class="fa-solid fa-user"></i> Iniciar sesión
@@ -107,11 +116,7 @@
     <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
     <main id="main-content" style="display:none">
-        <section class="hero" id="noticias">
-            <h1>La información resumida por IA</h1>
-        </section>
-
-        <h2 class="sr-only">Últimas noticias</h2>
+        <h2 id="noticias" class="sr-only">Últimas noticias</h2>
 
         <!-- Búsqueda -->
         <div class="search-container">
@@ -175,6 +180,24 @@
             <p id="no-more-msg" class="no-more-msg" style="display:none">Ya viste todas las noticias disponibles.</p>
         </div>
     </main>
+
+    <aside class="sidebar-right" id="sidebar-right" aria-label="Comunidad">
+        <div class="sidebar-section">
+            <h2 class="sidebar-title"><i class="fa-solid fa-circle-dot" style="color: var(--accent-color);"></i> En línea</h2>
+            <ul class="online-users-list" id="online-users-list"></ul>
+        </div>
+
+        <div class="sidebar-section chat-section">
+            <h2 class="sidebar-title"><i class="fa-solid fa-comments"></i> Chat</h2>
+            <ul class="chat-messages" id="chat-messages"></ul>
+            <form id="chat-form" class="chat-form">
+                <input type="text" id="chat-input" class="form-control" placeholder="Escribí un mensaje..." maxlength="500" autocomplete="off">
+                <button type="submit" class="chat-send-btn" aria-label="Enviar mensaje">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </aside>
 
     </div>
 
@@ -280,5 +303,7 @@
     <!-- No necesitas configurar credenciales aquí; si haces firebase deploy, Firebase se encarga mágicamente -->
     <script type="module" src="firebase-loader.js"></script>
     <script type="module" src="auth.js"></script>
+    <script type="module" src="presence.js"></script>
+    <script type="module" src="chat.js"></script>
 </body>
 </html>
