@@ -1114,6 +1114,14 @@ footer {
         transition: transform 0.3s ease, visibility 0s linear 0s;
     }
 
+    .sidebar .filters-container {
+        align-items: flex-start;
+    }
+
+    .sidebar .filter-btn {
+        width: auto;
+    }
+
     .sidebar-close-btn {
         display: block;
         align-self: flex-end;
