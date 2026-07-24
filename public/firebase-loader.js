@@ -1,5 +1,5 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getFirestore, collection, getDocs, query, orderBy, limit, startAfter } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFirebaseApp } from './firebase-init.js';
 
 const PAGE_SIZE = 25;
 let db;
@@ -8,9 +8,7 @@ let isLoading = false;
 
 async function cargarNoticias() {
     try {
-        const configRes = await fetch('/__/firebase/init.json');
-        const firebaseConfig = await configRes.json();
-        const app = initializeApp(firebaseConfig);
+        const app = await getFirebaseApp();
         db = getFirestore(app);
 
         const articulosQuery = query(collection(db, 'articulos'), orderBy('Fecha_Publicacion', 'desc'), limit(PAGE_SIZE));

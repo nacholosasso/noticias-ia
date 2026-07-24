@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { formatTimeAgo, getCategoryClass, normalizeText, getUniqueDiarios } = require('./app.js');
+const { formatTimeAgo, getCategoryClass, normalizeText, getUniqueDiarios, mergeReadLinks } = require('./app.js');
 
 test('getCategoryClass normaliza tildes y mayúsculas', () => {
     assert.equal(getCategoryClass('Política'), 'cat-politica');
@@ -59,4 +59,14 @@ test('getUniqueDiarios devuelve diarios unicos ordenados alfabeticamente por lab
 
 test('getUniqueDiarios ignora articulos sin diario', () => {
     assert.deepEqual(getUniqueDiarios([{ Diario: '' }, { Diario: null }, {}]), []);
+});
+
+test('mergeReadLinks une local y servidor sin duplicados', () => {
+    const local = new Set(['a', 'b']);
+    const fromServer = new Set(['b', 'c']);
+    assert.deepEqual([...mergeReadLinks(local, fromServer)].sort(), ['a', 'b', 'c']);
+});
+
+test('mergeReadLinks devuelve set vacio si ambos estan vacios', () => {
+    assert.deepEqual([...mergeReadLinks(new Set(), new Set())], []);
 });

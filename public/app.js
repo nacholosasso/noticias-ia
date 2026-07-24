@@ -47,7 +47,40 @@ function toggleReadLink(link) {
     try {
         localStorage.setItem(READ_STORAGE_KEY, JSON.stringify([...readLinks]));
     } catch {}
-    return readLinks.has(link);
+    const nowRead = readLinks.has(link);
+    if (typeof window !== 'undefined' && typeof window.onReadLinkToggled === 'function') {
+        window.onReadLinkToggled(link, nowRead);
+    }
+    return nowRead;
+}
+
+function mergeReadLinks(local, fromServer) {
+    return new Set([...local, ...fromServer]);
+}
+
+function mergeReadLinksAndRerender(linksFromServer) {
+    const local = getReadLinks();
+    const onlyLocal = [...local].filter((link) => !linksFromServer.has(link));
+    const merged = mergeReadLinks(local, linksFromServer);
+    try {
+        localStorage.setItem(READ_STORAGE_KEY, JSON.stringify([...merged]));
+    } catch {}
+
+    document.querySelectorAll('#news-container .news-card[data-link]').forEach((card) => {
+        const link = card.getAttribute('data-link');
+        const isRead = merged.has(link);
+        card.classList.toggle('read', isRead);
+        card.setAttribute('data-read', isRead ? 'true' : 'false');
+        const btn = card.querySelector('.read-toggle');
+        if (btn) {
+            btn.setAttribute('aria-pressed', isRead ? 'true' : 'false');
+            btn.title = isRead ? 'Marcar como no leída' : 'Marcar como leída';
+            btn.innerHTML = `<i class="fa-solid fa-check"></i> ${isRead ? 'Leída' : 'Marcar leída'}`;
+        }
+    });
+    applyFilters();
+
+    return onlyLocal;
 }
 
 function getCategoryClass(cat) {
@@ -246,6 +279,7 @@ if (typeof window !== 'undefined') {
     window.renderArticles = renderArticles;
     window.appendArticles = appendArticles;
     window.renderNewsError = renderNewsError;
+    window.mergeReadLinksAndRerender = mergeReadLinksAndRerender;
 }
 
 function initApp() {
@@ -303,5 +337,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { formatTimeAgo, getCategoryClass, normalizeText, getUniqueDiarios };
+    module.exports = { formatTimeAgo, getCategoryClass, normalizeText, getUniqueDiarios, mergeReadLinks };
 }

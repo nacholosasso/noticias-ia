@@ -85,6 +85,11 @@ header {
     gap: 0.6rem;
 }
 
+nav {
+    display: flex;
+    align-items: center;
+}
+
 nav a {
     color: var(--text-secondary);
     text-decoration: none;
@@ -96,6 +101,55 @@ nav a {
 
 nav a:hover {
     color: var(--text-primary);
+}
+
+#auth-container {
+    margin-left: 1.5rem;
+    display: flex;
+    align-items: center;
+}
+
+.auth-btn {
+    background-color: var(--surface-color);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 0.45rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.auth-btn:hover {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+#user-info {
+    align-items: center;
+    gap: 0.6rem;
+}
+
+#user-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+#user-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+#user-info .auth-btn {
+    padding: 0.4rem 0.6rem;
 }
 
 /* Sección Hero */

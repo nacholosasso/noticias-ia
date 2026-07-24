@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Artículos: lectura pública, escritura solo desde el backend (admin SDK bypasea rules).
+    match /articulos/{articuloId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Estado de "leído" por usuario: cada usuario solo puede leer/escribir su propia subcolección.
+    match /usuarios/{uid}/leidos/{docId} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Todo lo demás: denegado por defecto.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
