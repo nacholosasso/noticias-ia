@@ -93,9 +93,9 @@ function getCategoryClass(cat) {
 }
 
 const DIARIO_COLORS = {
-    ole: '#e30613',
-    caras: '#e6007e',
-    ambito: '#00954c',
+    ole: '#16a34a',
+    caras: '#dc2626',
+    ambito: '#1d4ed8',
 };
 const DIARIO_COLOR_PALETTE = ['#f5b942', '#3b82f6', '#8b5cf6', '#06b6d4', '#f97316', '#14b8a6', '#a855f7', '#ef4444'];
 

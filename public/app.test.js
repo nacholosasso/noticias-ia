@@ -14,8 +14,9 @@ test('getCategoryClass devuelve cat-general para categorías desconocidas o vac�
 });
 
 test('getDiarioColorRgb devuelve el color de marca conocido para diarios mapeados', () => {
-    assert.equal(getDiarioColorRgb('Olé'), '227, 6, 19');
-    assert.equal(getDiarioColorRgb('AMBITO'), '0, 149, 76');
+    assert.equal(getDiarioColorRgb('Olé'), '22, 163, 74');
+    assert.equal(getDiarioColorRgb('AMBITO'), '29, 78, 216');
+    assert.equal(getDiarioColorRgb('Caras'), '220, 38, 38');
 });
 
 test('getDiarioColorRgb es determinístico para diarios desconocidos', () => {
