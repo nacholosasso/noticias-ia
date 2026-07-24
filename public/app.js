@@ -83,15 +83,6 @@ function mergeReadLinksAndRerender(linksFromServer) {
     return onlyLocal;
 }
 
-function getCategoryClass(cat) {
-    if (!cat) return 'cat-general';
-
-    const normalized = normalizeText(cat);
-    const validCats = ['deportes', 'politica', 'economia', 'espectaculos', 'tecnologia', 'salud', 'sociedad'];
-
-    return validCats.includes(normalized) ? `cat-${normalized}` : 'cat-general';
-}
-
 function getUniqueDiarios(articles) {
     const seen = new Map();
     articles.forEach(({ Diario }) => {
@@ -119,10 +110,8 @@ function renderDiarioFilters(articlesData) {
 }
 
 function applyFilters() {
-    const activeCategoryBtn = document.querySelector('#category-filters .filter-btn.active');
     const activeDiarioBtn = document.querySelector('#diario-filters .filter-btn.active');
     const activeReadBtn = document.querySelector('#read-filters .filter-btn.active');
-    const activeCategoria = activeCategoryBtn ? activeCategoryBtn.getAttribute('data-filter') : 'all';
     const activeDiario = activeDiarioBtn ? activeDiarioBtn.getAttribute('data-diario-filter') : 'all';
     const activeLectura = activeReadBtn ? activeReadBtn.getAttribute('data-read-filter') : 'all';
     const searchInput = document.getElementById('search-input');
@@ -134,12 +123,11 @@ function applyFilters() {
     allCards.forEach(card => {
         if (card.querySelector('.skeleton')) return;
 
-        const matchCategoria = activeCategoria === 'all' || card.getAttribute('data-category') === activeCategoria;
         const matchDiario = activeDiario === 'all' || card.getAttribute('data-diario') === activeDiario;
         const matchBusqueda = searchTerm === '' || card.getAttribute('data-search').includes(searchTerm);
         const isRead = card.getAttribute('data-read') === 'true';
         const matchLectura = activeLectura === 'all' || (activeLectura === 'read' ? isRead : !isRead);
-        const visible = matchCategoria && matchDiario && matchBusqueda && matchLectura;
+        const visible = matchDiario && matchBusqueda && matchLectura;
 
         card.classList.toggle('hidden', !visible);
         if (visible) visibleCount++;
@@ -177,13 +165,10 @@ function renderArticles(articlesData) {
     articlesData.forEach((data) => {
         const articleEl = document.createElement('article');
 
-        const catClass = getCategoryClass(data.Categoria);
-        articleEl.setAttribute('data-category', catClass.replace('cat-', ''));
         const titulo = data.Titulo || 'Sin título';
         const resumen = data.Resumen_IA || data.Resumen_Web || 'Sin resumen disponible.';
         const fuente = data.Diario || 'Fuente';
         const link = data.Link || '#';
-        const categoriaTexto = data.Categoria || 'General';
         const isRead = readLinks.has(link);
 
         articleEl.className = `news-card${isRead ? ' read' : ''}`;
@@ -197,7 +182,6 @@ function renderArticles(articlesData) {
             <div class="card-header">
                 <div class="badges-wrapper">
                     <span class="diario-badge">${fuente}</span>
-                    <span class="category ${catClass}">${categoriaTexto}</span>
                 </div>
                 <span class="date">${formatTimeAgo(data.Fecha_Publicacion)}</span>
             </div>
@@ -227,16 +211,13 @@ function appendArticles(articlesData) {
 
     articlesData.forEach((data) => {
         const articleEl = document.createElement('article');
-        const catClass = getCategoryClass(data.Categoria);
         const titulo = data.Titulo || 'Sin título';
         const resumen = data.Resumen_IA || data.Resumen_Web || 'Sin resumen disponible.';
         const fuente = data.Diario || 'Fuente';
         const link = data.Link || '#';
-        const categoriaTexto = data.Categoria || 'General';
         const isRead = readLinks.has(link);
 
         articleEl.className = `news-card${isRead ? ' read' : ''}`;
-        articleEl.setAttribute('data-category', catClass.replace('cat-', ''));
         articleEl.setAttribute('data-diario', normalizeText(data.Diario));
         articleEl.setAttribute('data-diario-label', data.Diario || '');
         articleEl.setAttribute('data-search', normalizeText(`${titulo} ${resumen}`));
@@ -247,7 +228,6 @@ function appendArticles(articlesData) {
             <div class="card-header">
                 <div class="badges-wrapper">
                     <span class="diario-badge">${fuente}</span>
-                    <span class="category ${catClass}">${categoriaTexto}</span>
                 </div>
                 <span class="date">${formatTimeAgo(data.Fecha_Publicacion)}</span>
             </div>
@@ -283,14 +263,6 @@ if (typeof window !== 'undefined') {
 }
 
 function initApp() {
-    document.getElementById('category-filters').addEventListener('click', (e) => {
-        const btn = e.target.closest('.filter-btn');
-        if (!btn) return;
-        document.querySelectorAll('#category-filters .filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        applyFilters();
-    });
-
     document.getElementById('diario-filters').addEventListener('click', (e) => {
         const btn = e.target.closest('.filter-btn');
         if (!btn) return;
@@ -422,5 +394,5 @@ if (typeof document !== 'undefined') {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { formatTimeAgo, getCategoryClass, normalizeText, getUniqueDiarios, mergeReadLinks };
+    module.exports = { formatTimeAgo, normalizeText, getUniqueDiarios, mergeReadLinks };
 }

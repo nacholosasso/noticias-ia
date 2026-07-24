@@ -1,17 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { formatTimeAgo, getCategoryClass, normalizeText, getUniqueDiarios, mergeReadLinks } = require('./app.js');
-
-test('getCategoryClass normaliza tildes y mayúsculas', () => {
-    assert.equal(getCategoryClass('Política'), 'cat-politica');
-    assert.equal(getCategoryClass('ECONOMIA'), 'cat-economia');
-});
-
-test('getCategoryClass devuelve cat-general para categorías desconocidas o vacías', () => {
-    assert.equal(getCategoryClass('Clima'), 'cat-general');
-    assert.equal(getCategoryClass(null), 'cat-general');
-    assert.equal(getCategoryClass(undefined), 'cat-general');
-});
+const { formatTimeAgo, normalizeText, getUniqueDiarios, mergeReadLinks } = require('./app.js');
 
 test('formatTimeAgo muestra minutos para diferencias menores a una hora', () => {
     const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();

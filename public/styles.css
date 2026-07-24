@@ -9,16 +9,7 @@
     --accent-soft: rgba(245, 185, 66, 0.15);
     --border-color: #232a3a;
     --font-mono: 'JetBrains Mono', monospace;
-
-    /* Colores de Categorías */
-    --cat-deportes: #10b981;
-    --cat-politica: #ef4444;
-    --cat-economia: #eab308;
-    --cat-espectaculos: #ec4899;
-    --cat-tecnologia: #3b82f6;
-    --cat-salud: #06b6d4;
-    --cat-sociedad: #8b5cf6;
-    --cat-general: #64748b;
+    --color-success: #10b981;
 }
 
 * {
@@ -299,7 +290,7 @@ nav a:hover {
 }
 
 .auth-info {
-    color: var(--cat-deportes);
+    color: var(--color-success);
     font-size: 0.85rem;
     margin-bottom: 1rem;
 }
@@ -373,24 +364,6 @@ main {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
-.news-card[data-category="deportes"] { border-left-color: var(--cat-deportes); }
-.news-card[data-category="politica"] { border-left-color: var(--cat-politica); }
-.news-card[data-category="economia"] { border-left-color: var(--cat-economia); }
-.news-card[data-category="espectaculos"] { border-left-color: var(--cat-espectaculos); }
-.news-card[data-category="tecnologia"] { border-left-color: var(--cat-tecnologia); }
-.news-card[data-category="salud"] { border-left-color: var(--cat-salud); }
-.news-card[data-category="sociedad"] { border-left-color: var(--cat-sociedad); }
-.news-card[data-category="general"] { border-left-color: var(--cat-general); }
-
-.news-card[data-category="deportes"]:hover { border-color: var(--cat-deportes); box-shadow: 0 12px 30px rgba(16, 185, 129, 0.25); }
-.news-card[data-category="politica"]:hover { border-color: var(--cat-politica); box-shadow: 0 12px 30px rgba(239, 68, 68, 0.25); }
-.news-card[data-category="economia"]:hover { border-color: var(--cat-economia); box-shadow: 0 12px 30px rgba(234, 179, 8, 0.25); }
-.news-card[data-category="espectaculos"]:hover { border-color: var(--cat-espectaculos); box-shadow: 0 12px 30px rgba(236, 72, 153, 0.25); }
-.news-card[data-category="tecnologia"]:hover { border-color: var(--cat-tecnologia); box-shadow: 0 12px 30px rgba(59, 130, 246, 0.25); }
-.news-card[data-category="salud"]:hover { border-color: var(--cat-salud); box-shadow: 0 12px 30px rgba(6, 182, 212, 0.25); }
-.news-card[data-category="sociedad"]:hover { border-color: var(--cat-sociedad); box-shadow: 0 12px 30px rgba(139, 92, 246, 0.25); }
-.news-card[data-category="general"]:hover { border-color: var(--cat-general); box-shadow: 0 12px 30px rgba(100, 116, 139, 0.25); }
 
 .card-header {
     display: flex;
@@ -475,25 +448,6 @@ main {
     border-top: 1px solid var(--border-color);
 }
 
-.category {
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.35rem 0.85rem;
-    border-radius: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Clases Dinámicas de Categorías */
-.cat-deportes { background-color: rgba(16, 185, 129, 0.15); color: var(--cat-deportes); }
-.cat-politica { background-color: rgba(239, 68, 68, 0.15); color: var(--cat-politica); }
-.cat-economia { background-color: rgba(234, 179, 8, 0.15); color: var(--cat-economia); }
-.cat-espectaculos { background-color: rgba(236, 72, 153, 0.15); color: var(--cat-espectaculos); }
-.cat-tecnologia { background-color: rgba(59, 130, 246, 0.15); color: var(--cat-tecnologia); }
-.cat-salud { background-color: rgba(6, 182, 212, 0.15); color: var(--cat-salud); }
-.cat-sociedad { background-color: rgba(139, 92, 246, 0.15); color: var(--cat-sociedad); }
-.cat-general { background-color: rgba(100, 116, 139, 0.15); color: var(--cat-general); }
-
 .badges-wrapper {
     display: flex;
     gap: 0.5rem;
@@ -516,7 +470,7 @@ main {
     color: var(--accent-hover);
 }
 
-/* Filtros de Categorías */
+/* Filtros de la barra lateral */
 .filters-container {
     display: flex;
     flex-wrap: wrap;
