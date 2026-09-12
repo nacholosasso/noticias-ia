@@ -32,12 +32,6 @@
     <header>
         <div class="container header-content">
             <div class="header-left">
-                <button type="button" id="sidebar-toggle-btn" class="hamburger-btn" aria-label="Abrir menú de filtros" aria-expanded="false" aria-controls="sidebar">
-                    <i class="fa-solid fa-bars"></i>
-                </button>
-                <button type="button" id="sidebar-reopen-btn" class="icon-toggle-btn sidebar-reopen-btn" aria-controls="sidebar" title="Mostrar menú de filtros">
-                    <i class="fa-solid fa-sliders"></i>
-                </button>
                 <a href="#" class="logo" aria-label="InfoIA">
                     Info<span>IA</span>
                 </a>
@@ -76,28 +70,15 @@
                 <button class="filter-btn" data-filter="general"><i class="fa-solid fa-newspaper"></i> General</button>
             </div>
         </div>
-    </header>
-
-    <div class="layout-wrapper container">
-
-    <aside class="sidebar" id="sidebar" aria-label="Filtros de noticias">
-        <button type="button" id="sidebar-close-btn" class="sidebar-close-btn" aria-label="Cerrar menú de filtros">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
-        <button type="button" id="sidebar-collapse-btn" class="sidebar-collapse-btn" aria-controls="sidebar" title="Ocultar menú de filtros">
-            <i class="fa-solid fa-angles-left"></i>
-        </button>
-
-        <div class="sidebar-section">
-            <h2 class="sidebar-title"><i class="fa-solid fa-newspaper"></i> Diario</h2>
+        <div class="container secondary-filters-bar">
+            <span class="filters-label"><i class="fa-solid fa-newspaper"></i> Diario</span>
             <!-- Filtro por diario (se completa dinámicamente según las noticias cargadas) -->
             <div class="filters-container" id="diario-filters">
                 <button class="filter-btn active" data-diario-filter="all"><i class="fa-solid fa-newspaper"></i> Todos los diarios</button>
             </div>
         </div>
-
-        <div class="sidebar-section">
-            <h2 class="sidebar-title"><i class="fa-regular fa-circle-check"></i> Lectura</h2>
+        <div class="container secondary-filters-bar">
+            <span class="filters-label"><i class="fa-regular fa-circle-check"></i> Lectura</span>
             <!-- Filtro por estado de lectura -->
             <div class="filters-container" id="read-filters">
                 <button class="filter-btn" data-read-filter="all"><i class="fa-solid fa-layer-group"></i> Todas</button>
@@ -105,9 +86,9 @@
                 <button class="filter-btn" data-read-filter="read"><i class="fa-solid fa-check"></i> Leídas</button>
             </div>
         </div>
-    </aside>
+    </header>
 
-    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+    <div class="layout-wrapper container">
 
     <main id="main-content">
         <h1 id="noticias" class="sr-only">Últimas noticias — InfoIA</h1>

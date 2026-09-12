@@ -403,67 +403,15 @@ function initApp() {
         applyFilters();
     });
 
-    initSidebarToggle();
     initLayoutToggles();
 }
 
-function initSidebarToggle() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebar-overlay');
-    const toggleBtn = document.getElementById('sidebar-toggle-btn');
-    const closeBtn = document.getElementById('sidebar-close-btn');
-    if (!sidebar || !overlay || !toggleBtn || !closeBtn) return;
-
-    const openSidebar = () => {
-        sidebar.classList.add('open');
-        overlay.classList.add('visible');
-        toggleBtn.setAttribute('aria-expanded', 'true');
-        closeBtn.focus();
-    };
-    const closeSidebar = () => {
-        sidebar.classList.remove('open');
-        overlay.classList.remove('visible');
-        toggleBtn.setAttribute('aria-expanded', 'false');
-        toggleBtn.focus();
-    };
-
-    toggleBtn.addEventListener('click', () => {
-        sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
-    });
-    overlay.addEventListener('click', closeSidebar);
-    closeBtn.addEventListener('click', closeSidebar);
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && sidebar.classList.contains('open')) closeSidebar();
-    });
-}
-
-const FILTERS_HIDDEN_KEY = 'noticiasIA_ocultarFiltros';
 const CHAT_HIDDEN_KEY = 'noticiasIA_ocultarChat';
 
 function initLayoutToggles() {
     const layoutWrapper = document.querySelector('.layout-wrapper');
-    const collapseBtn = document.getElementById('sidebar-collapse-btn');
-    const reopenBtn = document.getElementById('sidebar-reopen-btn');
     const chatBtn = document.getElementById('chat-toggle-btn');
     if (!layoutWrapper) return;
-
-    if (collapseBtn && reopenBtn) {
-        const applyFiltersState = (hidden) => {
-            layoutWrapper.classList.toggle('hide-left-sidebar', hidden);
-            reopenBtn.style.display = hidden ? 'inline-flex' : 'none';
-        };
-
-        applyFiltersState(localStorage.getItem(FILTERS_HIDDEN_KEY) === 'true');
-
-        collapseBtn.addEventListener('click', () => {
-            localStorage.setItem(FILTERS_HIDDEN_KEY, 'true');
-            applyFiltersState(true);
-        });
-        reopenBtn.addEventListener('click', () => {
-            localStorage.setItem(FILTERS_HIDDEN_KEY, 'false');
-            applyFiltersState(false);
-        });
-    }
 
     if (chatBtn) {
         const applyState = (hidden) => {
