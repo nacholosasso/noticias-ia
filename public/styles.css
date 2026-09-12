@@ -158,18 +158,6 @@ nav a:hover {
     border-radius: 4px;
 }
 
-.filters-label {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: var(--text-secondary);
-}
-
 .secondary-filters-bar .filters-container {
     flex-wrap: nowrap;
     justify-content: flex-start;
@@ -404,7 +392,7 @@ main {
 /* Grilla de Noticias */
 .news-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 2rem;
     margin-bottom: 4rem;
 }
@@ -952,9 +940,6 @@ body.is-premium .ad-remove-cta {
 
 /* Panel lateral derecho: usuarios en línea + chat */
 .sidebar-right {
-    position: sticky;
-    top: 9rem;
-    align-self: start;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
