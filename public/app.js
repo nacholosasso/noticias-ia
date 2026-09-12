@@ -83,6 +83,8 @@ function mergeReadLinksAndRerender(linksFromServer) {
     return onlyLocal;
 }
 
+// Ads desactivados por ahora: no hay proveedor conectado todavía.
+const ADS_ENABLED = false;
 const ADS_EVERY = 6;
 let articlesRenderedSinceAd = 0;
 
@@ -100,6 +102,7 @@ function crearAdSlot() {
 function agregarConAnuncios(container, articleEls) {
     articleEls.forEach((articleEl) => {
         container.appendChild(articleEl);
+        if (!ADS_ENABLED) return;
         articlesRenderedSinceAd++;
         if (articlesRenderedSinceAd >= ADS_EVERY) {
             container.appendChild(crearAdSlot());
