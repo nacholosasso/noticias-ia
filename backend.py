@@ -1,6 +1,7 @@
 import feedparser
 from google import genai
 import pandas as pd
+import hashlib
 import json
 import os
 import re
@@ -63,7 +64,11 @@ def conectar_firestore(request=None):
 
 def guardar_en_firestore(nueva_fila, db):
     try:
-        db.collection('articulos').add(nueva_fila)
+        # ID determinístico a partir del link: si dos corridas procesan la misma
+        # noticia en simultáneo (ej. local + Cloud Scheduler), pisan el mismo
+        # documento en vez de crear uno duplicado.
+        doc_id = hashlib.sha256(nueva_fila['Link'].encode()).hexdigest()
+        db.collection('articulos').document(doc_id).set(nueva_fila)
         return True
     except Exception as e:
         print(f"⚠️ Error al insertar documento en Firestore: {e}")
