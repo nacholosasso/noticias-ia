@@ -9,7 +9,7 @@ import {
     signOut,
     onAuthStateChanged,
 } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-import { getFirestore, doc, collection, getDocs, setDoc, deleteDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, collection, getDocs, setDoc, deleteDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 import { getFirebaseApp } from './firebase-init.js';
 
 const ERRORES_AUTH = {
@@ -75,6 +75,17 @@ async function sincronizarLeidos(db, uid) {
     }
 }
 
+// El flag "premium" se activa a mano desde la consola de Firebase (ver README) cuando alguien paga la suscripción manual.
+async function sincronizarPremium(db, uid) {
+    try {
+        const snap = await getDoc(doc(db, 'usuarios', uid));
+        const esPremium = snap.exists() && snap.data().premium === true;
+        if (typeof window.actualizarEstadoPremium === 'function') window.actualizarEstadoPremium(esPremium);
+    } catch (err) {
+        console.error('Error consultando estado premium:', err);
+    }
+}
+
 function mostrarUsuario(user) {
     const loginBtn = document.getElementById('login-btn');
     const userInfo = document.getElementById('user-info');
@@ -94,8 +105,8 @@ function mostrarUsuario(user) {
 
 function initAuthModal(auth) {
     const modal = document.getElementById('auth-modal');
-    const gateLoadingEl = document.getElementById('gate-loading');
-    const mainEl = document.getElementById('main-content');
+    const modalCloseBtn = document.getElementById('auth-modal-close');
+    const loginBtn = document.getElementById('login-btn');
     const viewLogin = document.getElementById('auth-view-login');
     const viewVerify = document.getElementById('auth-view-verify');
 
@@ -117,55 +128,60 @@ function initAuthModal(auth) {
     const verifyLogoutBtn = document.getElementById('verify-logout-btn');
     const msgVerify = crearMensajero(verifyErrorEl, verifyInfoEl);
 
-    let yaSeCargaronNoticias = false;
-
     function mostrarVistaLogin() {
-        gateLoadingEl.style.display = 'none';
-        modal.style.display = 'flex';
         viewLogin.style.display = 'block';
         viewVerify.style.display = 'none';
         msgLogin.limpiar();
     }
 
     function mostrarVistaVerificar(user) {
-        gateLoadingEl.style.display = 'none';
-        modal.style.display = 'flex';
         viewLogin.style.display = 'none';
         viewVerify.style.display = 'block';
         verifyEmailSpan.textContent = user.email || '';
         msgVerify.limpiar();
     }
 
-    function concederAcceso() {
-        gateLoadingEl.style.display = 'none';
+    function abrirModal() {
+        modal.style.display = 'flex';
+        mostrarVistaLogin();
+    }
+
+    function cerrarModal() {
         modal.style.display = 'none';
         form.reset();
         msgLogin.limpiar();
         msgVerify.limpiar();
-        mainEl.style.display = '';
-        if (!yaSeCargaronNoticias) {
-            yaSeCargaronNoticias = true;
-            if (typeof window.iniciarNoticias === 'function') window.iniciarNoticias();
-        }
     }
 
+    loginBtn.addEventListener('click', abrirModal);
+    modalCloseBtn.addEventListener('click', cerrarModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) cerrarModal();
+    });
+
+    // El login es opcional (las noticias se ven sin cuenta); esto solo reacciona a cambios de sesión
+    // para cerrar el modal al loguearse o pedir la verificación de mail si hace falta.
     actualizarAcceso = function actualizarAccesoImpl(user) {
+        if (!user) {
+            cerrarModal();
+            return;
+        }
         if (usuarioTieneAcceso(user)) {
-            concederAcceso();
+            cerrarModal();
             return;
         }
-        if (user) {
-            user.reload()
-                .then(() => {
-                    if (user.emailVerified) {
-                        return user.getIdToken(true).then(() => actualizarAccesoImpl(auth.currentUser));
-                    }
-                    mostrarVistaVerificar(user);
-                })
-                .catch(() => mostrarVistaVerificar(user));
-            return;
-        }
-        mostrarVistaLogin();
+        user.reload()
+            .then(() => {
+                if (user.emailVerified) {
+                    return user.getIdToken(true).then(() => actualizarAccesoImpl(auth.currentUser));
+                }
+                modal.style.display = 'flex';
+                mostrarVistaVerificar(user);
+            })
+            .catch(() => {
+                modal.style.display = 'flex';
+                mostrarVistaVerificar(user);
+            });
     };
 
     function cambiarModo(nuevoModo) {
@@ -283,6 +299,9 @@ async function initAuth() {
             sincronizarLeidos(db, user.uid).catch((err) => {
                 console.error('Error sincronizando noticias leídas:', err);
             });
+            sincronizarPremium(db, user.uid);
+        } else if (typeof window.actualizarEstadoPremium === 'function') {
+            window.actualizarEstadoPremium(false);
         }
     });
 }

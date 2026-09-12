@@ -83,6 +83,39 @@ function mergeReadLinksAndRerender(linksFromServer) {
     return onlyLocal;
 }
 
+const ADS_EVERY = 6;
+let articlesRenderedSinceAd = 0;
+
+function crearAdSlot() {
+    const slot = document.createElement('div');
+    slot.className = 'news-card ad-slot';
+    slot.innerHTML = `
+        <span class="ad-slot-label">Publicidad</span>
+        <p class="ad-slot-placeholder">Espacio publicitario</p>
+    `;
+    return slot;
+}
+
+// Intercala un aviso cada ADS_EVERY noticias reales. Los que sean "sin anuncios" los ocultan por CSS (body.is-premium).
+function agregarConAnuncios(container, articleEls) {
+    articleEls.forEach((articleEl) => {
+        container.appendChild(articleEl);
+        articlesRenderedSinceAd++;
+        if (articlesRenderedSinceAd >= ADS_EVERY) {
+            container.appendChild(crearAdSlot());
+            articlesRenderedSinceAd = 0;
+        }
+    });
+}
+
+function actualizarEstadoPremium(esPremium) {
+    document.body.classList.toggle('is-premium', !!esPremium);
+}
+
+if (typeof window !== 'undefined') {
+    window.actualizarEstadoPremium = actualizarEstadoPremium;
+}
+
 function getCategoryClass(cat) {
     if (!cat) return 'cat-general';
 
@@ -150,7 +183,7 @@ function applyFilters() {
     const searchInput = document.getElementById('search-input');
     const searchTerm = searchInput ? normalizeText(searchInput.value.trim()) : '';
 
-    const allCards = document.querySelectorAll('#news-container .news-card');
+    const allCards = document.querySelectorAll('#news-container .news-card:not(.ad-slot)');
     let visibleCount = 0;
 
     allCards.forEach(card => {
@@ -196,7 +229,7 @@ function renderArticles(articlesData) {
 
     const readLinks = getReadLinks();
 
-    articlesData.forEach((data) => {
+    const articleEls = articlesData.map((data) => {
         const articleEl = document.createElement('article');
 
         const catClass = getCategoryClass(data.Categoria);
@@ -236,8 +269,11 @@ function renderArticles(articlesData) {
             </div>
         `;
 
-        newsContainer.appendChild(articleEl);
+        return articleEl;
     });
+
+    articlesRenderedSinceAd = 0;
+    agregarConAnuncios(newsContainer, articleEls);
 
     renderDiarioFilters(articlesData);
     applyFilters();
@@ -248,7 +284,7 @@ function appendArticles(articlesData) {
     const newsContainer = document.getElementById('news-container');
     const readLinks = getReadLinks();
 
-    articlesData.forEach((data) => {
+    const articleEls = articlesData.map((data) => {
         const articleEl = document.createElement('article');
         const catClass = getCategoryClass(data.Categoria);
         const titulo = data.Titulo || 'Sin título';
@@ -287,8 +323,10 @@ function appendArticles(articlesData) {
             </div>
         `;
 
-        newsContainer.appendChild(articleEl);
+        return articleEl;
     });
+
+    agregarConAnuncios(newsContainer, articleEls);
 
     renderDiarioFilters(articlesData);
     applyFilters();

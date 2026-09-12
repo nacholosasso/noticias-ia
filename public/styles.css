@@ -208,18 +208,6 @@ nav a:hover {
     padding: 0.4rem 0.6rem;
 }
 
-.gate-loading {
-    position: fixed;
-    inset: 0;
-    background-color: var(--bg-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 300;
-    font-size: 2rem;
-    color: var(--accent-color);
-}
-
 /* Modal de login / registro */
 .modal-overlay {
     position: fixed;
@@ -453,6 +441,34 @@ main {
     background-color: var(--accent-color);
     border-color: var(--accent-color);
     color: var(--bg-color);
+}
+
+/* Placeholder de anuncio: se reemplaza el contenido interno por el snippet real de AdSense cuando esté aprobado. */
+.ad-slot {
+    border-left-color: var(--border-color);
+    border-style: dashed;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 0.5rem;
+    min-height: 160px;
+}
+
+.ad-slot:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.ad-slot-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+}
+
+.ad-slot-placeholder {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
 .news-title {
@@ -945,6 +961,28 @@ footer {
     width: 100%;
     border-radius: 8px;
     white-space: normal;
+}
+
+.ad-remove-cta p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+.ad-remove-cta .social-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    gap: 0.6rem;
+}
+
+.ad-remove-cta .social-btn i {
+    font-size: 1.1rem;
+}
+
+/* Los que tienen la cuenta sin anuncios no ven ni los avisos ni la invitación a sacárselos */
+body.is-premium .ad-slot,
+body.is-premium .ad-remove-cta {
+    display: none;
 }
 
 /* Panel lateral derecho: usuarios en línea + chat */

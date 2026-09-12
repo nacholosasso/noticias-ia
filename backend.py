@@ -36,11 +36,11 @@ FUENTES = {
 # RPM de la capa gratuita por modelo (tier free de AI Studio, ver spec).
 # Se usa para pacear el sleep entre noticias según el modelo que respondió.
 RPM_POR_MODELO = {
-    'gemini-3.1-flash-lite-preview': 15,
+    'gemini-3.8-flash': 5,
+    'gemini-3.7-flash': 5,
+    'gemini-3.6-flash': 5,
+    'gemini-3.5-flash-lite': 15,
     'gemini-3.5-flash': 5,
-    'gemini-3-flash-preview': 5,
-    'gemini-2.5-flash-lite': 10,
-    'gemini-2.5-flash': 5,
 }
 
 FIREBASE_CREDS = "firebase-creds.json"
@@ -209,14 +209,14 @@ def ejecutar_recoleccion(request=None):
 
                 # GEMINI (Modelos TAL CUAL pediste)
                 modelos_a_probar = [
-                    'gemini-3.1-flash-lite-preview',
+                    'gemini-3.8-flash',
+                    'gemini-3.7-flash',
+                    'gemini-3.6-flash',
+                    'gemini-3.5-flash-lite',
                     'gemini-3.5-flash',
-                    'gemini-3-flash-preview',
-                    'gemini-2.5-flash-lite',
-                    'gemini-2.5-flash'
                 ]
 
-                prompt = f"Sos un periodista experto. Resumí la siguiente noticia en un único párrafo de entre 100 y 120 palabras y clasificala en una categoría. Apuntá a la parte alta del rango (cerca de 120) siempre que el texto dé material suficiente; si la noticia es muy escueta, priorizá la precisión y NO rellenes con frases vacías. REGLA ESTRICTA: básate ÚNICA Y EXCLUSIVAMENTE en el texto proporcionado. NO agregues información externa, no inventes datos y NO asumas nombres de personas (como entrenadores, funcionarios o jugadores) que no estén explícitamente escritos en el texto.\n\nNoticia:\n{texto_para_ia}"
+                prompt = f"Sos un periodista experto. Resumí la siguiente noticia en un único párrafo de entre 100 y 120 palabras y clasificala en una categoría. Apuntá a la parte alta del rango (cerca de 120) siempre que el texto dé material suficiente; si la noticia es muy escueta, priorizá la precisión y NO rellenes con frases vacías. Mantené un tono neutral y periodístico, sin opiniones ni valoraciones. Arrancá directo con el hecho central, sin frases de relleno como 'La noticia trata sobre' o similares. REGLA ESTRICTA: básate ÚNICA Y EXCLUSIVAMENTE en el texto proporcionado. NO agregues información externa, no inventes datos y NO asumas nombres de personas (como entrenadores, funcionarios o jugadores) que no estén explícitamente escritos en el texto.\n\nNoticia:\n{texto_para_ia}"
 
                 config_respuesta = {
                     'response_mime_type': 'application/json',

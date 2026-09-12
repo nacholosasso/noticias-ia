@@ -89,3 +89,13 @@ gcloud scheduler jobs create http noticias-backend-job-scheduler-trigger \
   --http-method POST \
   --oauth-service-account-email <SERVICE_ACCOUNT_EMAIL>
 ```
+
+## 💳 Activar la cuenta "sin anuncios" (manual)
+
+El sitio se ve gratis con anuncios para cualquiera, sin necesidad de cuenta. Quien quiera sacarse los anuncios escribe a `nacholosasso@hotmail.com`, paga por transferencia/Mercado Pago y vos activás el acceso a mano:
+
+1. Pedile que se registre en el sitio (necesita una cuenta con email verificado).
+2. En la [consola de Firebase](https://console.firebase.google.com/) → Firestore Database → colección `usuarios`, buscá el documento con su `uid` (Authentication → Users te da el uid a partir del email).
+3. Editá (o creá) ese documento y agregale el campo `premium` de tipo booleano en `true`.
+
+El frontend lee ese flag al loguearse y oculta los anuncios y la invitación a suscribirse. No hay cobro automático ni corte por falta de pago: si alguien deja de pagar, hay que volver a este mismo paso y poner `premium` en `false`.

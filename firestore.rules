@@ -2,9 +2,16 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Artículos: lectura solo para usuarios con email verificado (Google siempre lo tiene), escritura solo desde el backend (admin SDK bypasea rules).
+    // Artículos: lectura pública (es el contenido gratis con anuncios), escritura solo desde el backend (admin SDK bypasea rules).
     match /articulos/{articuloId} {
-      allow read: if request.auth != null && request.auth.token.email_verified == true;
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Doc de usuario: cada uno solo puede leer el suyo (incluye el flag "premium" que saca los anuncios).
+    // Escritura solo desde la consola de Firebase / Admin SDK: un usuario no puede otorgarse premium a sí mismo.
+    match /usuarios/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
       allow write: if false;
     }
 

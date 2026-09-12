@@ -144,3 +144,6 @@ async function cargarTodas() {
 window.cargarMas = cargarMas;
 window.cargarTodas = cargarTodas;
 window.iniciarNoticias = cargarNoticias;
+
+// Las noticias son de acceso público: se cargan apenas entra cualquiera, sin esperar a que resuelva el login.
+cargarNoticias();
